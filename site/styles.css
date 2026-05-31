@@ -205,10 +205,13 @@ h1 {
   padding-left: 18px;
 }
 .scn .glyph {
-  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   color: var(--muted);
   width: 16px;
-  text-align: center;
+  height: 16px;
+  flex: 0 0 16px;
 }
 .scn[aria-selected="true"] .glyph {
   color: var(--ink);
