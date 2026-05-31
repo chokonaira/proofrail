@@ -4,7 +4,7 @@ export type JsonPrimitive = string | number | boolean | null;
 export type JsonValue = JsonPrimitive | JsonValue[] | { [key: string]: JsonValue | undefined };
 export type JsonObject = { [key: string]: JsonValue | undefined };
 
-export interface ProofrailKeyPair {
+export interface PermitRailKeyPair {
   readonly alg: 'EdDSA';
   readonly kid: string;
   readonly publicKeyPem: string;
@@ -73,7 +73,7 @@ export interface CreateProofInput<TInput = unknown> {
 }
 
 export interface ProofPayload {
-  readonly kind: 'proofrail.proof.v1';
+  readonly kind: 'permitrail.proof.v1';
   readonly id: string;
   readonly requestId?: string;
   readonly challengeId?: string;
@@ -116,7 +116,7 @@ export interface CreateActionReceiptInput<TInput = unknown> {
 }
 
 export interface ActionReceiptPayload {
-  readonly kind: 'proofrail.action_receipt.v1';
+  readonly kind: 'permitrail.action_receipt.v1';
   readonly id: string;
   readonly action: ProofAction;
   readonly decision: string;
@@ -163,8 +163,8 @@ export interface PolicyRule {
   readonly require?: ProofRequirement;
 }
 
-export interface ProofrailPolicy {
-  readonly version: 'proofrail.policy.v1' | string;
+export interface PermitRailPolicy {
+  readonly version: 'permitrail.policy.v1' | string;
   readonly id?: string;
   readonly defaults?: {
     readonly unconfiguredTool?: ToolDefaultDecision;

@@ -1,4 +1,4 @@
-import type { ActionReceiptPayload, SignedEnvelope } from '@proofrail/core';
+import type { ActionReceiptPayload, SignedEnvelope } from '@permitrail/core';
 
 /**
  * An AuditSink receives every signed receipt the gateway produces, for allowed

@@ -1,15 +1,15 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { createProofrailKeyPair } from '@proofrail/core';
-import type { ProofrailPolicy } from '@proofrail/core';
-import { ProofrailGateway } from '@proofrail/mcp-gateway';
-import { LocalApprovalProvider } from '@proofrail/provider-local';
+import { createPermitRailKeyPair } from '@permitrail/core';
+import type { PermitRailPolicy } from '@permitrail/core';
+import { PermitRailGateway } from '@permitrail/mcp-gateway';
+import { LocalApprovalProvider } from '@permitrail/provider-local';
 
-import { createProofrailRpcHandler } from '../src/index.ts';
+import { createPermitRailRpcHandler } from '../src/index.ts';
 
 const policy = {
-  version: 'proofrail.policy.v1',
+  version: 'permitrail.policy.v1',
   id: 'mcp-test',
   defaults: { unconfiguredTool: 'deny' },
   tools: {
@@ -23,7 +23,7 @@ const policy = {
       },
     },
   },
-} satisfies ProofrailPolicy;
+} satisfies PermitRailPolicy;
 
 const emailAction = {
   tool: 'email.send',
@@ -35,14 +35,14 @@ const emailAction = {
 
 async function buildHandler() {
   const provider = await LocalApprovalProvider.create();
-  const receiptKeyPair = await createProofrailKeyPair({ kid: 'mcp-test' });
-  const gateway = new ProofrailGateway({
+  const receiptKeyPair = await createPermitRailKeyPair({ kid: 'mcp-test' });
+  const gateway = new PermitRailGateway({
     policy,
     provider,
     trustedProofKeys: [provider.publicKeyPem],
     receiptKeyPair,
   });
-  return createProofrailRpcHandler({ gateway, provider, devApproval: true });
+  return createPermitRailRpcHandler({ gateway, provider, devApproval: true });
 }
 
 test('initialize returns protocol version and server info', async () => {
@@ -53,24 +53,24 @@ test('initialize returns protocol version and server info', async () => {
     capabilities: { tools: unknown };
   };
   assert.equal(result.protocolVersion, '2025-06-18');
-  assert.equal(result.serverInfo.name, 'proofrail');
+  assert.equal(result.serverInfo.name, 'permitrail');
   assert.ok(result.capabilities.tools);
 });
 
-test('tools/list exposes the proofrail tools', async () => {
+test('tools/list exposes the permitrail tools', async () => {
   const handler = await buildHandler();
   const result = (await handler('tools/list', {})) as { tools: { name: string }[] };
   const names = result.tools.map((tool) => tool.name);
-  assert.ok(names.includes('proofrail_authorize_tool_call'));
-  assert.ok(names.includes('proofrail_write_receipt'));
-  assert.ok(names.includes('proofrail_approve_challenge'));
+  assert.ok(names.includes('permitrail_authorize_tool_call'));
+  assert.ok(names.includes('permitrail_write_receipt'));
+  assert.ok(names.includes('permitrail_approve_challenge'));
 });
 
 test('tools/call authorize then approve completes the loop over MCP', async () => {
   const handler = await buildHandler();
 
   const authorize = (await handler('tools/call', {
-    name: 'proofrail_authorize_tool_call',
+    name: 'permitrail_authorize_tool_call',
     arguments: { action: emailAction },
   })) as { content: { text: string }[]; isError?: boolean };
   assert.ok(!authorize.isError);
@@ -79,12 +79,12 @@ test('tools/call authorize then approve completes the loop over MCP', async () =
   assert.ok(decision.challenge?.id);
 
   const approve = (await handler('tools/call', {
-    name: 'proofrail_approve_challenge',
+    name: 'permitrail_approve_challenge',
     arguments: { challengeId: decision.challenge!.id, approvedBy: 'tester' },
   })) as { content: { text: string }[]; isError?: boolean };
   assert.ok(!approve.isError);
   const proof = JSON.parse(approve.content[0]!.text) as { payload: { kind: string } };
-  assert.equal(proof.payload.kind, 'proofrail.proof.v1');
+  assert.equal(proof.payload.kind, 'permitrail.proof.v1');
 });
 
 test('unknown methods return a JSON-RPC method-not-found error', async () => {

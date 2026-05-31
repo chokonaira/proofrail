@@ -1,6 +1,6 @@
 # Security Policy
 
-Proofrail is security-sensitive software. It is designed to sit between AI agents
+PermitRail is security-sensitive software. It is designed to sit between AI agents
 and tools that can send messages, spend money, mutate data, or access private
 systems.
 
@@ -14,7 +14,7 @@ Please do not open public issues for exploitable vulnerabilities.
 
 Report privately by email:
 
-- security contact: `security@proofrail.dev` (placeholder until project email is live)
+- security contact: `security@permitrail.dev` (placeholder until project email is live)
 - fallback: contact the maintainer through GitHub
 
 Include:
@@ -36,6 +36,6 @@ Include:
 
 ## Non-Goals
 
-Proofrail does not make unsafe tools safe by itself. It provides a policy and
+PermitRail does not make unsafe tools safe by itself. It provides a policy and
 proof layer. Tool implementers remain responsible for validating inputs,
 enforcing authorization, and limiting side effects.

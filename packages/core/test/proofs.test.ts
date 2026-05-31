@@ -3,14 +3,14 @@ import test from 'node:test';
 
 import {
   createActionReceipt,
-  createProofrailKeyPair,
+  createPermitRailKeyPair,
   createProof,
   verifyActionReceipt,
   verifyProof,
 } from '../src/index.ts';
 
 test('createProof signs and verifies purpose-bound proof', async () => {
-  const keys = await createProofrailKeyPair({ kid: 'test-key' });
+  const keys = await createPermitRailKeyPair({ kid: 'test-key' });
   const proof = await createProof(
     {
       claim: 'human.approved_action',
@@ -18,7 +18,7 @@ test('createProof signs and verifies purpose-bound proof', async () => {
       subject: 'user_1',
       audience: 'email-agent',
       purpose: 'Send invoice INV-1',
-      provider: 'proofrail-local',
+      provider: 'permitrail-local',
       assurance: 'human_approved',
       ttlSeconds: 60,
     },
@@ -38,14 +38,14 @@ test('createProof signs and verifies purpose-bound proof', async () => {
 });
 
 test('verifyProof rejects a tampered payload', async () => {
-  const keys = await createProofrailKeyPair({ kid: 'test-key' });
+  const keys = await createPermitRailKeyPair({ kid: 'test-key' });
   const proof = await createProof(
     {
       claim: 'human.approved_action',
       subject: 'user_1',
       audience: 'email-agent',
       purpose: 'Send invoice INV-1',
-      provider: 'proofrail-local',
+      provider: 'permitrail-local',
     },
     keys,
   );
@@ -59,7 +59,7 @@ test('verifyProof rejects a tampered payload', async () => {
 });
 
 test('verifyProof rejects expired proof', async () => {
-  const keys = await createProofrailKeyPair({ kid: 'test-key' });
+  const keys = await createPermitRailKeyPair({ kid: 'test-key' });
   const issued = new Date('2026-01-01T00:00:00Z');
   const proof = await createProof(
     {
@@ -67,7 +67,7 @@ test('verifyProof rejects expired proof', async () => {
       subject: 'user_1',
       audience: 'email-agent',
       purpose: 'Send invoice INV-1',
-      provider: 'proofrail-local',
+      provider: 'permitrail-local',
       now: issued,
       ttlSeconds: 1,
     },
@@ -85,7 +85,7 @@ test('verifyProof rejects expired proof', async () => {
 });
 
 test('action receipts include input hashes', async () => {
-  const keys = await createProofrailKeyPair({ kid: 'receipt-key' });
+  const keys = await createPermitRailKeyPair({ kid: 'receipt-key' });
   const receipt = await createActionReceipt(
     {
       action: {
@@ -103,7 +103,7 @@ test('action receipts include input hashes', async () => {
   );
 
   const payload = await verifyActionReceipt(receipt, { publicKeyPem: keys.publicKeyPem });
-  assert.equal(payload.kind, 'proofrail.action_receipt.v1');
+  assert.equal(payload.kind, 'permitrail.action_receipt.v1');
   assert.ok(payload.inputHash);
   assert.match(payload.inputHash, /^sha256:/);
 });

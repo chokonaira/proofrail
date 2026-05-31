@@ -1,23 +1,23 @@
 import {
   createActionReceipt,
-  createProofrailKeyPair,
+  createPermitRailKeyPair,
   createId,
   createProof,
-} from '@proofrail/core';
+} from '@permitrail/core';
 import type {
   ActionReceiptPayload,
   AssuranceLevel,
   JsonValue,
-  ProofrailKeyPair,
+  PermitRailKeyPair,
   ProofChallenge,
   ProofPayload,
   ProofRequest,
   SignedEnvelope,
-} from '@proofrail/core';
+} from '@permitrail/core';
 
 export interface LocalApprovalProviderOptions {
   readonly provider?: string;
-  readonly keyPair: ProofrailKeyPair;
+  readonly keyPair: PermitRailKeyPair;
 }
 
 export interface ApproveProofOptions {
@@ -33,7 +33,7 @@ export interface DenyProofOptions {
 
 export class LocalApprovalProvider {
   readonly provider: string;
-  readonly keyPair: ProofrailKeyPair;
+  readonly keyPair: PermitRailKeyPair;
   readonly challenges: Map<string, ProofChallenge>;
 
   constructor(options: LocalApprovalProviderOptions) {
@@ -42,14 +42,14 @@ export class LocalApprovalProvider {
         'LocalApprovalProvider requires a keyPair. Use "await LocalApprovalProvider.create()" to generate one, or pass your own.',
       );
     }
-    this.provider = options.provider || 'proofrail-local';
+    this.provider = options.provider || 'permitrail-local';
     this.keyPair = options.keyPair;
     this.challenges = new Map();
   }
 
   static async create(options: { readonly provider?: string } = {}): Promise<LocalApprovalProvider> {
-    const provider = options.provider || 'proofrail-local';
-    const keyPair = await createProofrailKeyPair({ kid: `${provider}-dev` });
+    const provider = options.provider || 'permitrail-local';
+    const keyPair = await createPermitRailKeyPair({ kid: `${provider}-dev` });
     return new LocalApprovalProvider({ provider, keyPair });
   }
 
@@ -66,7 +66,7 @@ export class LocalApprovalProvider {
         ...input,
         requestId: input.requestId || createId('request'),
       },
-      approvalUrl: `proofrail://approve/${createId('approval')}`,
+      approvalUrl: `permitrail://approve/${createId('approval')}`,
       createdAt: new Date().toISOString(),
     };
 

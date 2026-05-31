@@ -1,6 +1,6 @@
 import { stableStringify } from './canonical-json.ts';
 import { invariant } from './errors.ts';
-import type { EnvelopeHeader, JsonValue, ProofrailKeyPair, SignedEnvelope } from './types.ts';
+import type { EnvelopeHeader, JsonValue, PermitRailKeyPair, SignedEnvelope } from './types.ts';
 
 // Ed25519 over the Web Crypto API. The same code runs on Node 20+, modern
 // browsers, Deno, Bun, and edge runtimes, with no native or third-party
@@ -14,7 +14,7 @@ function getSubtle() {
   invariant(
     webcrypto && webcrypto.subtle,
     'NO_WEBCRYPTO',
-    'Proofrail needs the Web Crypto API. Run on Node 20+, a modern browser, Deno, Bun, or an edge runtime.',
+    'PermitRail needs the Web Crypto API. Run on Node 20+, a modern browser, Deno, Bun, or an edge runtime.',
   );
   return webcrypto.subtle;
 }
@@ -24,7 +24,7 @@ function getRandomBytes(length: number): Uint8Array {
   invariant(
     webcrypto && webcrypto.getRandomValues,
     'NO_WEBCRYPTO',
-    'Proofrail needs a secure random source (globalThis.crypto.getRandomValues).',
+    'PermitRail needs a secure random source (globalThis.crypto.getRandomValues).',
   );
   return webcrypto.getRandomValues(new Uint8Array(length));
 }
@@ -78,9 +78,9 @@ function pemToBytes(pem: string): Uint8Array {
   return base64ToBytes(body);
 }
 
-export async function createProofrailKeyPair(
+export async function createPermitRailKeyPair(
   { kid }: { readonly kid?: string } = {},
-): Promise<ProofrailKeyPair> {
+): Promise<PermitRailKeyPair> {
   const generated = await getSubtle().generateKey(EDDSA, true, ['sign', 'verify']);
   if (!('publicKey' in generated)) {
     throw new Error('Ed25519 key generation did not return a key pair');
@@ -90,7 +90,7 @@ export async function createProofrailKeyPair(
 
   return {
     alg: 'EdDSA',
-    kid: kid || `proofrail-${randomId(8)}`,
+    kid: kid || `permitrail-${randomId(8)}`,
     publicKeyPem: toPem(spki, 'PUBLIC KEY'),
     privateKeyPem: toPem(pkcs8, 'PRIVATE KEY'),
   };
@@ -105,7 +105,7 @@ export function createId(prefix: string): string {
   invariant(
     webcrypto && webcrypto.randomUUID,
     'NO_WEBCRYPTO',
-    'Proofrail needs globalThis.crypto.randomUUID for identifiers.',
+    'PermitRail needs globalThis.crypto.randomUUID for identifiers.',
   );
   return `${prefix}_${webcrypto.randomUUID()}`;
 }
@@ -118,7 +118,7 @@ export async function sha256(value: unknown): Promise<string> {
 
 export async function signEnvelope<TPayload extends object>(
   payload: TPayload & { readonly kind?: string },
-  keyPair: ProofrailKeyPair,
+  keyPair: PermitRailKeyPair,
   header: Record<string, JsonValue | undefined> = {},
 ): Promise<SignedEnvelope<TPayload>> {
   invariant(payload && typeof payload === 'object', 'INVALID_PAYLOAD', 'Payload must be an object');
@@ -129,7 +129,7 @@ export async function signEnvelope<TPayload extends object>(
     ...header,
     alg: 'EdDSA',
     kid: keyPair.kid,
-    typ: payload.kind || 'proofrail.payload',
+    typ: payload.kind || 'permitrail.payload',
   };
 
   const signingInput = stableStringify({ protected: protectedHeader, payload });

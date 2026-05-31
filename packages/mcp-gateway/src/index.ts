@@ -4,18 +4,18 @@ import {
   createActionReceipt,
   evaluatePolicy,
   verifyProof,
-} from '@proofrail/core';
+} from '@permitrail/core';
 import type {
   ActionReceiptPayload,
   AgentAction,
-  ProofrailKeyPair,
-  ProofrailPolicy,
+  PermitRailKeyPair,
+  PermitRailPolicy,
   PolicyDecision,
   ProofChallenge,
   ProofPayload,
   ProofProvider,
   SignedEnvelope,
-} from '@proofrail/core';
+} from '@permitrail/core';
 
 import { InMemoryReplayGuard } from './replay-guard.ts';
 import type { ReplayGuard } from './replay-guard.ts';
@@ -26,13 +26,13 @@ export { InMemoryAuditLog } from './audit.ts';
 export type { ReplayGuard } from './replay-guard.ts';
 export type { AuditSink } from './audit.ts';
 
-export interface ProofrailGatewayOptions {
-  readonly policy?: ProofrailPolicy;
+export interface PermitRailGatewayOptions {
+  readonly policy?: PermitRailPolicy;
   readonly provider?: ProofProvider;
-  // Required. Generate once with createProofrailKeyPair() and persist it so
+  // Required. Generate once with createPermitRailKeyPair() and persist it so
   // receipts stay verifiable across restarts. A gateway that mints a throwaway
   // key on every boot produces an audit trail nobody can later verify.
-  readonly receiptKeyPair: ProofrailKeyPair;
+  readonly receiptKeyPair: PermitRailKeyPair;
   readonly trustedProofKeys?: readonly string[];
   // Enforces single-use proofs. Defaults to an in-process guard; supply a
   // shared implementation (for example Redis-backed) for multi-instance setups.
@@ -62,7 +62,7 @@ export interface GatewayExecutionResult<TInput = unknown, TResult = unknown> {
 }
 
 export interface McpToolDefinition {
-  readonly name: ProofrailMcpToolName;
+  readonly name: PermitRailMcpToolName;
   readonly description: string;
   readonly inputSchema: {
     readonly type: 'object';
@@ -72,34 +72,34 @@ export interface McpToolDefinition {
   };
 }
 
-export interface ProofrailMcpToolsOptions {
-  readonly gateway: ProofrailGateway;
+export interface PermitRailMcpToolsOptions {
+  readonly gateway: PermitRailGateway;
   readonly provider?: ProofProvider;
 }
 
-export type ProofrailMcpToolName =
-  | 'proofrail_authorize_tool_call'
-  | 'proofrail_get_challenge'
-  | 'proofrail_verify_proof'
-  | 'proofrail_write_receipt';
+export type PermitRailMcpToolName =
+  | 'permitrail_authorize_tool_call'
+  | 'permitrail_get_challenge'
+  | 'permitrail_verify_proof'
+  | 'permitrail_write_receipt';
 
-export interface ProofrailMcpToolRouter {
+export interface PermitRailMcpToolRouter {
   readonly tools: readonly McpToolDefinition[];
-  callTool(name: ProofrailMcpToolName, input: Record<string, unknown>): Promise<unknown>;
+  callTool(name: PermitRailMcpToolName, input: Record<string, unknown>): Promise<unknown>;
 }
 
-export class ProofrailGateway {
-  readonly policy?: ProofrailPolicy;
+export class PermitRailGateway {
+  readonly policy?: PermitRailPolicy;
   readonly provider?: ProofProvider;
-  readonly receiptKeyPair: ProofrailKeyPair;
+  readonly receiptKeyPair: PermitRailKeyPair;
   readonly trustedProofKeys: readonly string[];
   readonly replayGuard: ReplayGuard;
   readonly auditSink?: AuditSink;
 
-  constructor(options: ProofrailGatewayOptions) {
+  constructor(options: PermitRailGatewayOptions) {
     if (!options?.receiptKeyPair?.privateKeyPem) {
       throw new Error(
-        'ProofrailGateway requires a receiptKeyPair. Generate one with createProofrailKeyPair() and persist it so receipts stay verifiable across restarts.',
+        'PermitRailGateway requires a receiptKeyPair. Generate one with createPermitRailKeyPair() and persist it so receipts stay verifiable across restarts.',
       );
     }
     this.policy = options.policy;
@@ -209,7 +209,7 @@ export class ProofrailGateway {
 
 export const MCP_TOOL_DEFINITIONS: readonly McpToolDefinition[] = Object.freeze([
   {
-    name: 'proofrail_authorize_tool_call',
+    name: 'permitrail_authorize_tool_call',
     description: 'Authorize an agent tool call and request proof when policy requires it.',
     inputSchema: {
       type: 'object',
@@ -236,7 +236,7 @@ export const MCP_TOOL_DEFINITIONS: readonly McpToolDefinition[] = Object.freeze(
     },
   },
   {
-    name: 'proofrail_get_challenge',
+    name: 'permitrail_get_challenge',
     description: 'Read the status of a pending, approved, or denied proof challenge.',
     inputSchema: {
       type: 'object',
@@ -248,8 +248,8 @@ export const MCP_TOOL_DEFINITIONS: readonly McpToolDefinition[] = Object.freeze(
     },
   },
   {
-    name: 'proofrail_verify_proof',
-    description: 'Verify a signed Proofrail proof envelope.',
+    name: 'permitrail_verify_proof',
+    description: 'Verify a signed PermitRail proof envelope.',
     inputSchema: {
       type: 'object',
       required: ['proofEnvelope'],
@@ -261,7 +261,7 @@ export const MCP_TOOL_DEFINITIONS: readonly McpToolDefinition[] = Object.freeze(
     },
   },
   {
-    name: 'proofrail_write_receipt',
+    name: 'permitrail_write_receipt',
     description: 'Create a signed receipt for an allowed, blocked, or denied action.',
     inputSchema: {
       type: 'object',
@@ -292,31 +292,31 @@ export const MCP_TOOL_DEFINITIONS: readonly McpToolDefinition[] = Object.freeze(
   },
 ]);
 
-export function createProofrailMcpTools(options: ProofrailMcpToolsOptions): ProofrailMcpToolRouter {
+export function createPermitRailMcpTools(options: PermitRailMcpToolsOptions): PermitRailMcpToolRouter {
   return {
     tools: MCP_TOOL_DEFINITIONS,
     async callTool(name, input) {
       switch (name) {
-        case 'proofrail_authorize_tool_call':
+        case 'permitrail_authorize_tool_call':
           return options.gateway.authorize(
             input.action as AgentAction,
             { proofEnvelope: input.proofEnvelope as SignedEnvelope<ProofPayload> | undefined },
           );
 
-        case 'proofrail_get_challenge':
+        case 'permitrail_get_challenge':
           if (!options.provider?.getChallenge) {
-            throw new Error('This Proofrail provider does not expose challenge lookup');
+            throw new Error('This PermitRail provider does not expose challenge lookup');
           }
           return options.provider.getChallenge(String(input.challengeId));
 
-        case 'proofrail_verify_proof':
+        case 'permitrail_verify_proof':
           return verifyWithTrustedKeys(
             options.gateway.trustedProofKeys,
             input.proofEnvelope as SignedEnvelope<ProofPayload>,
             typeof input.publicKeyPem === 'string' ? input.publicKeyPem : undefined,
           );
 
-        case 'proofrail_write_receipt':
+        case 'permitrail_write_receipt':
           return createActionReceipt(
             {
               action: input.action as AgentAction,
@@ -329,7 +329,7 @@ export function createProofrailMcpTools(options: ProofrailMcpToolsOptions): Proo
           );
 
         default:
-          throw new Error(`Unknown Proofrail MCP tool: ${String(name)}`);
+          throw new Error(`Unknown PermitRail MCP tool: ${String(name)}`);
       }
     },
   };

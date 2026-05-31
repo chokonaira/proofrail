@@ -1,13 +1,13 @@
 {
-  "name": "@proofrail/provider-local",
+  "name": "@permitrail/provider-local",
   "version": "0.1.0",
   "type": "module",
-  "description": "Local approval provider for Proofrail demos and internal tools.",
+  "description": "Local approval provider for PermitRail demos and internal tools.",
   "license": "Apache-2.0",
   "author": "Henry Okonkwo",
   "repository": {
     "type": "git",
-    "url": "https://github.com/chokonaira/proofrail.git",
+    "url": "https://github.com/chokonaira/permitrail.git",
     "directory": "packages/local-provider"
   },
   "main": "./dist/index.js",
@@ -28,7 +28,7 @@
     "LICENSE"
   ],
   "dependencies": {
-    "@proofrail/core": "0.1.0"
+    "@permitrail/core": "0.1.0"
   },
   "engines": {
     "node": ">=20.0.0"

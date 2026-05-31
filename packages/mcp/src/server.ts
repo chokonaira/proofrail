@@ -1,12 +1,12 @@
-import { MCP_TOOL_DEFINITIONS, createProofrailMcpTools } from '@proofrail/mcp-gateway';
-import type { ProofrailGateway, ProofrailMcpToolName } from '@proofrail/mcp-gateway';
-import { LocalApprovalProvider } from '@proofrail/provider-local';
-import type { ProofProvider } from '@proofrail/core';
+import { MCP_TOOL_DEFINITIONS, createPermitRailMcpTools } from '@permitrail/mcp-gateway';
+import type { PermitRailGateway, PermitRailMcpToolName } from '@permitrail/mcp-gateway';
+import { LocalApprovalProvider } from '@permitrail/provider-local';
+import type { ProofProvider } from '@permitrail/core';
 
 import type { RpcHandler } from './jsonrpc.ts';
 
-export interface ProofrailMcpServerOptions {
-  readonly gateway: ProofrailGateway;
+export interface PermitRailMcpServerOptions {
+  readonly gateway: PermitRailGateway;
   readonly provider?: ProofProvider;
   readonly name?: string;
   readonly version?: string;
@@ -25,7 +25,7 @@ interface ListedTool {
 const DEFAULT_PROTOCOL_VERSION = '2025-06-18';
 
 const APPROVE_TOOL: ListedTool = {
-  name: 'proofrail_approve_challenge',
+  name: 'permitrail_approve_challenge',
   description:
     'Development only. Approve a pending local proof challenge and return a signed proof. In production, approvals come from a real provider channel, not this tool.',
   inputSchema: {
@@ -33,7 +33,7 @@ const APPROVE_TOOL: ListedTool = {
     required: ['challengeId'],
     additionalProperties: false,
     properties: {
-      challengeId: { type: 'string', description: 'The challenge id returned by proofrail_authorize_tool_call.' },
+      challengeId: { type: 'string', description: 'The challenge id returned by permitrail_authorize_tool_call.' },
       approvedBy: { type: 'string', description: 'Optional identifier for who approved.' },
     },
   },
@@ -45,9 +45,9 @@ function rpcError(code: number, message: string): Error {
   return error;
 }
 
-export function createProofrailRpcHandler(options: ProofrailMcpServerOptions): RpcHandler {
-  const router = createProofrailMcpTools({ gateway: options.gateway, provider: options.provider });
-  const name = options.name ?? 'proofrail';
+export function createPermitRailRpcHandler(options: PermitRailMcpServerOptions): RpcHandler {
+  const router = createPermitRailMcpTools({ gateway: options.gateway, provider: options.provider });
+  const name = options.name ?? 'permitrail';
   const version = options.version ?? '0.1.0';
   const localProvider =
     options.devApproval && options.provider instanceof LocalApprovalProvider ? options.provider : undefined;
@@ -69,7 +69,7 @@ export function createProofrailRpcHandler(options: ProofrailMcpServerOptions): R
           approvedBy: typeof toolArgs.approvedBy === 'string' ? toolArgs.approvedBy : 'mcp-dev-approver',
         });
       } else {
-        result = await router.callTool(toolName as ProofrailMcpToolName, toolArgs);
+        result = await router.callTool(toolName as PermitRailMcpToolName, toolArgs);
       }
       return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
     } catch (error) {

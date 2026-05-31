@@ -1,6 +1,6 @@
 # Threat Model
 
-Proofrail protects risky agent tool calls from running without appropriate proof.
+PermitRail protects risky agent tool calls from running without appropriate proof.
 
 ## Assets
 
@@ -84,7 +84,7 @@ Mitigation:
 
 ## Out Of Scope
 
-Proofrail does not:
+PermitRail does not:
 
 - validate every downstream tool input
 - replace application authorization

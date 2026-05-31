@@ -1,11 +1,11 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { createProofrailKeyPair, createProof, evaluatePolicy } from '../src/index.ts';
-import type { AgentAction, ProofrailPolicy } from '../src/index.ts';
+import { createPermitRailKeyPair, createProof, evaluatePolicy } from '../src/index.ts';
+import type { AgentAction, PermitRailPolicy } from '../src/index.ts';
 
 const policy = {
-  version: 'proofrail.policy.v1',
+  version: 'permitrail.policy.v1',
   id: 'test-policy',
   defaults: { unconfiguredTool: 'deny' },
   tools: {
@@ -19,7 +19,7 @@ const policy = {
       },
     },
   },
-} satisfies ProofrailPolicy;
+} satisfies PermitRailPolicy;
 
 const action = {
   tool: 'email.send',
@@ -43,14 +43,14 @@ test('policy denies unconfigured tools by default', async () => {
 });
 
 test('policy allows action when proof is bound to exact input', async () => {
-  const keys = await createProofrailKeyPair({ kid: 'policy-key' });
+  const keys = await createPermitRailKeyPair({ kid: 'policy-key' });
   const proof = await createProof(
     {
       claim: 'human.approved_action',
       subject: action.subject,
       audience: action.audience,
       purpose: action.purpose,
-      provider: 'proofrail-local',
+      provider: 'permitrail-local',
       action,
     },
     keys,
@@ -62,14 +62,14 @@ test('policy allows action when proof is bound to exact input', async () => {
 });
 
 test('policy denies action when proof is replayed with different input', async () => {
-  const keys = await createProofrailKeyPair({ kid: 'policy-key' });
+  const keys = await createPermitRailKeyPair({ kid: 'policy-key' });
   const proof = await createProof(
     {
       claim: 'human.approved_action',
       subject: action.subject,
       audience: action.audience,
       purpose: action.purpose,
-      provider: 'proofrail-local',
+      provider: 'permitrail-local',
       action,
     },
     keys,
@@ -89,9 +89,9 @@ test('policy denies action when proof is replayed with different input', async (
 });
 
 test('policy matches structured (object) claim values by deep equality', async () => {
-  const keys = await createProofrailKeyPair({ kid: 'policy-key' });
+  const keys = await createPermitRailKeyPair({ kid: 'policy-key' });
   const objectPolicy = {
-    version: 'proofrail.policy.v1',
+    version: 'permitrail.policy.v1',
     id: 'object-value-policy',
     defaults: { unconfiguredTool: 'deny' },
     tools: {
@@ -100,7 +100,7 @@ test('policy matches structured (object) claim values by deep equality', async (
         require: { claim: 'config.scope', value: { env: 'prod', tier: 'high' } },
       },
     },
-  } satisfies ProofrailPolicy;
+  } satisfies PermitRailPolicy;
 
   const flagAction = {
     tool: 'flags.set',
@@ -118,7 +118,7 @@ test('policy matches structured (object) claim values by deep equality', async (
       subject: flagAction.subject,
       audience: flagAction.audience,
       purpose: flagAction.purpose,
-      provider: 'proofrail-local',
+      provider: 'permitrail-local',
     },
     keys,
   );

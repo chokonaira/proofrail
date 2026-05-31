@@ -1,15 +1,15 @@
 import { readFileSync } from 'node:fs';
 
-import { createProofrailKeyPair } from '@proofrail/core';
-import type { ProofrailKeyPair, ProofrailPolicy } from '@proofrail/core';
-import { InMemoryAuditLog, ProofrailGateway } from '@proofrail/mcp-gateway';
-import { LocalApprovalProvider } from '@proofrail/provider-local';
+import { createPermitRailKeyPair } from '@permitrail/core';
+import type { PermitRailKeyPair, PermitRailPolicy } from '@permitrail/core';
+import { InMemoryAuditLog, PermitRailGateway } from '@permitrail/mcp-gateway';
+import { LocalApprovalProvider } from '@permitrail/provider-local';
 
 // A safe default policy: read-only calendar is allowed, email and payments need
 // human approval bound to the exact input, and everything else is denied.
-const SAMPLE_POLICY: ProofrailPolicy = {
-  version: 'proofrail.policy.v1',
-  id: 'proofrail-sample',
+const SAMPLE_POLICY: PermitRailPolicy = {
+  version: 'permitrail.policy.v1',
+  id: 'permitrail-sample',
   defaults: { unconfiguredTool: 'deny' },
   tools: {
     'calendar.read': { id: 'calendar-read', mode: 'allow', risk: 'low', reason: 'Read-only calendar access.' },
@@ -41,17 +41,17 @@ const SAMPLE_POLICY: ProofrailPolicy = {
 };
 
 export interface LoadedServer {
-  readonly gateway: ProofrailGateway;
+  readonly gateway: PermitRailGateway;
   readonly provider: LocalApprovalProvider;
   readonly auditLog: InMemoryAuditLog;
 }
 
 export async function loadServerFromEnv(env: NodeJS.ProcessEnv = process.env): Promise<LoadedServer> {
-  const policy = readPolicy(env.PROOFRAIL_POLICY);
+  const policy = readPolicy(env.PERMITRAIL_POLICY);
   const provider = await LocalApprovalProvider.create();
-  const receiptKeyPair = await readReceiptKey(env.PROOFRAIL_RECEIPT_KEY);
+  const receiptKeyPair = await readReceiptKey(env.PERMITRAIL_RECEIPT_KEY);
   const auditLog = new InMemoryAuditLog();
-  const gateway = new ProofrailGateway({
+  const gateway = new PermitRailGateway({
     policy,
     provider,
     trustedProofKeys: [provider.publicKeyPem],
@@ -61,17 +61,17 @@ export async function loadServerFromEnv(env: NodeJS.ProcessEnv = process.env): P
   return { gateway, provider, auditLog };
 }
 
-function readPolicy(path: string | undefined): ProofrailPolicy {
+function readPolicy(path: string | undefined): PermitRailPolicy {
   if (!path) return SAMPLE_POLICY;
-  return JSON.parse(readFileSync(path, 'utf8')) as ProofrailPolicy;
+  return JSON.parse(readFileSync(path, 'utf8')) as PermitRailPolicy;
 }
 
-async function readReceiptKey(path: string | undefined): Promise<ProofrailKeyPair> {
+async function readReceiptKey(path: string | undefined): Promise<PermitRailKeyPair> {
   if (path) {
-    return JSON.parse(readFileSync(path, 'utf8')) as ProofrailKeyPair;
+    return JSON.parse(readFileSync(path, 'utf8')) as PermitRailKeyPair;
   }
   process.stderr.write(
-    '[proofrail] WARNING: PROOFRAIL_RECEIPT_KEY is not set. Generated an ephemeral receipt key; receipts will not verify across restarts. Set PROOFRAIL_RECEIPT_KEY to a persisted key file in production.\n',
+    '[permitrail] WARNING: PERMITRAIL_RECEIPT_KEY is not set. Generated an ephemeral receipt key; receipts will not verify across restarts. Set PERMITRAIL_RECEIPT_KEY to a persisted key file in production.\n',
   );
-  return createProofrailKeyPair({ kid: 'proofrail-mcp-dev' });
+  return createPermitRailKeyPair({ kid: 'permitrail-mcp-dev' });
 }

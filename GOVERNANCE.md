@@ -1,6 +1,6 @@
 # Governance
 
-Proofrail starts as a maintainer-led project.
+PermitRail starts as a maintainer-led project.
 
 ## Maintainer Responsibilities
 

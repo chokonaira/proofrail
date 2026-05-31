@@ -1,6 +1,6 @@
 ## Summary
 
-Describe the change and why it belongs in Proofrail.
+Describe the change and why it belongs in PermitRail.
 
 ## Validation
 

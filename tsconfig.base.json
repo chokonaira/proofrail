@@ -18,10 +18,10 @@
     "types": ["node"],
     "baseUrl": ".",
     "paths": {
-      "@proofrail/core": ["packages/core/src/index.ts"],
-      "@proofrail/provider-local": ["packages/local-provider/src/index.ts"],
-      "@proofrail/mcp-gateway": ["packages/mcp-gateway/src/index.ts"],
-      "@proofrail/mcp": ["packages/mcp/src/index.ts"]
+      "@permitrail/core": ["packages/core/src/index.ts"],
+      "@permitrail/provider-local": ["packages/local-provider/src/index.ts"],
+      "@permitrail/mcp-gateway": ["packages/mcp-gateway/src/index.ts"],
+      "@permitrail/mcp": ["packages/mcp/src/index.ts"]
     }
   }
 }

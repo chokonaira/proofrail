@@ -3,7 +3,7 @@
 This policy is intended to keep the project name credible while allowing normal
 open-source use.
 
-The names `Proofrail`, `proofrail`, and the project logos or visual marks identify
+The names `PermitRail`, `permitrail`, and the project logos or visual marks identify
 this project. The Apache-2.0 license covers the code, not the project marks.
 
 ## Allowed Uses
@@ -11,15 +11,15 @@ this project. The Apache-2.0 license covers the code, not the project marks.
 You may use the project name to:
 
 - refer to the original project
-- say that your project is compatible with Proofrail
+- say that your project is compatible with PermitRail
 - link to the official repository
 - describe unmodified distributions of the project
 
 Examples:
 
-- "Uses Proofrail"
-- "Compatible with Proofrail proofs"
-- "Forked from Proofrail"
+- "Uses PermitRail"
+- "Compatible with PermitRail proofs"
+- "Forked from PermitRail"
 
 ## Uses That Need Permission
 
@@ -28,9 +28,9 @@ official status, or project ownership.
 
 Examples:
 
-- naming a commercial product `Proofrail Cloud`
+- naming a commercial product `PermitRail Cloud`
 - using the logo as your product logo
-- presenting a fork as the official Proofrail project
+- presenting a fork as the official PermitRail project
 - registering confusingly similar domains or package names
 
 ## Forks

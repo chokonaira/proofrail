@@ -20,7 +20,7 @@ jobs:
       - run: npm install
       - run: npm run check
       - run: npm run build
-      # Requires an NPM_TOKEN secret with publish rights for the @proofrail scope.
+      # Requires an NPM_TOKEN secret with publish rights for the @permitrail scope.
       # --provenance pairs with id-token: write to attest the build.
       - run: npm publish --workspaces --provenance --access public
         env:

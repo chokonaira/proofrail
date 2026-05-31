@@ -1,6 +1,6 @@
 # Contributing
 
-Proofrail is early, but the contribution rules are intentionally strict because
+PermitRail is early, but the contribution rules are intentionally strict because
 the project is security-sensitive.
 
 ## Contribution Requirements

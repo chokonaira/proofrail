@@ -1,11 +1,11 @@
-import { createProofrailKeyPair } from '@proofrail/core';
-import { ProofrailGateway, InMemoryAuditLog } from '@proofrail/mcp-gateway';
-import { LocalApprovalProvider } from '@proofrail/provider-local';
+import { createPermitRailKeyPair } from '@permitrail/core';
+import { PermitRailGateway, InMemoryAuditLog } from '@permitrail/mcp-gateway';
+import { LocalApprovalProvider } from '@permitrail/provider-local';
 
 const $ = (id) => document.getElementById(id);
 
 const policy = {
-  version: 'proofrail.policy.v1',
+  version: 'permitrail.policy.v1',
   id: 'sandbox',
   defaults: { unconfiguredTool: 'deny' },
   tools: {
@@ -103,8 +103,8 @@ let proof = null;
 
 async function init() {
   provider = await LocalApprovalProvider.create();
-  const receiptKeyPair = await createProofrailKeyPair({ kid: 'sandbox-receipts' });
-  gateway = new ProofrailGateway({
+  const receiptKeyPair = await createPermitRailKeyPair({ kid: 'sandbox-receipts' });
+  gateway = new PermitRailGateway({
     policy,
     provider,
     trustedProofKeys: [provider.publicKeyPem],

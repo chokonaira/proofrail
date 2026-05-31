@@ -1,13 +1,13 @@
 {
-  "name": "@proofrail/core",
+  "name": "@permitrail/core",
   "version": "0.1.0",
   "type": "module",
-  "description": "Core proof, policy, and receipt primitives for Proofrail.",
+  "description": "Core proof, policy, and receipt primitives for PermitRail.",
   "license": "Apache-2.0",
   "author": "Henry Okonkwo",
   "repository": {
     "type": "git",
-    "url": "https://github.com/chokonaira/proofrail.git",
+    "url": "https://github.com/chokonaira/permitrail.git",
     "directory": "packages/core"
   },
   "main": "./dist/index.js",

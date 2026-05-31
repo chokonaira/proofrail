@@ -1,23 +1,23 @@
 # Proof Format
 
-Proofrail proofs are signed envelopes.
+PermitRail proofs are signed envelopes.
 
 ```json
 {
   "protected": {
     "alg": "EdDSA",
-    "kid": "proofrail-local-dev",
-    "typ": "proofrail.proof.v1"
+    "kid": "permitrail-local-dev",
+    "typ": "permitrail.proof.v1"
   },
   "payload": {
-    "kind": "proofrail.proof.v1",
+    "kind": "permitrail.proof.v1",
     "id": "proof_...",
     "claim": "human.approved_action",
     "value": true,
     "subject": "user_123",
     "audience": "email-agent",
     "purpose": "Send invoice INV-123 to client@example.com",
-    "provider": "proofrail-local",
+    "provider": "permitrail-local",
     "assurance": "human_approved",
     "nonce": "...",
     "issuedAt": "2026-05-31T12:00:00.000Z",
@@ -45,7 +45,7 @@ Proofrail proofs are signed envelopes.
 
 ## Assurance Levels
 
-Proofrail uses explicit assurance labels instead of pretending all proofs are the
+PermitRail uses explicit assurance labels instead of pretending all proofs are the
 same.
 
 | Level | Meaning |

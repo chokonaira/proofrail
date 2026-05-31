@@ -8,7 +8,7 @@
 - Isomorphic Web Crypto core (Node, browsers, Deno, Bun, edge), zero dependencies
 - Multi-agent chain correlation (chainId and parentId on signed receipts)
 - Local approval provider
-- Runnable stdio MCP server (`@proofrail/mcp`)
+- Runnable stdio MCP server (`@permitrail/mcp`)
 - Installable packages with ESM and type declarations
 - Live in-browser sandbox
 

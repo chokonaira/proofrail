@@ -5,7 +5,7 @@ import type {
   AgentAction,
   AssuranceLevel,
   AssuranceRequirement,
-  ProofrailPolicy,
+  PermitRailPolicy,
   PolicyDecision,
   PolicyDecisionOutcome,
   PolicyRule,
@@ -15,8 +15,8 @@ import type {
   VerifyProofOptions,
 } from './types.ts';
 
-export const DEFAULT_POLICY: ProofrailPolicy = Object.freeze({
-  version: 'proofrail.policy.v1',
+export const DEFAULT_POLICY: PermitRailPolicy = Object.freeze({
+  version: 'permitrail.policy.v1',
   id: 'default-deny',
   defaults: {
     unconfiguredTool: 'deny' as const,
@@ -27,7 +27,7 @@ export const DEFAULT_POLICY: ProofrailPolicy = Object.freeze({
 type PolicyVerificationOptions = Partial<VerifyProofOptions>;
 
 export async function evaluatePolicy<TInput = unknown>(
-  policy: ProofrailPolicy | undefined,
+  policy: PermitRailPolicy | undefined,
   action: AgentAction<TInput>,
   proofEnvelope?: SignedEnvelope<ProofPayload>,
   verificationOptions: PolicyVerificationOptions = {},
@@ -113,7 +113,7 @@ export async function evaluatePolicy<TInput = unknown>(
 }
 
 export function buildProofRequestFromPolicy<TInput = unknown>(
-  policy: ProofrailPolicy,
+  policy: PermitRailPolicy,
   action: AgentAction<TInput>,
   rule: PolicyRule | null = resolveRule(policy, action.tool),
 ): ProofRequest<TInput> {
@@ -139,7 +139,7 @@ export function buildProofRequestFromPolicy<TInput = unknown>(
   };
 }
 
-export function resolveRule(policy: ProofrailPolicy | undefined, tool: string): PolicyRule | null {
+export function resolveRule(policy: PermitRailPolicy | undefined, tool: string): PolicyRule | null {
   return policy?.tools?.[tool] || policy?.tools?.['*'] || null;
 }
 

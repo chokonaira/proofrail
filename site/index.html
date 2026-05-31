@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Proofrail Sandbox — authorize, prove, audit every agent action</title>
+    <title>PermitRail Sandbox — authorize, prove, audit every agent action</title>
     <meta
       name="description"
-      content="A live, in-browser sandbox for Proofrail. Watch an AI agent action pass through policy, human approval, a signed proof, execution, and a signed receipt. Replays are blocked. All cryptography runs in your browser."
+      content="A live, in-browser sandbox for PermitRail. Watch an AI agent action pass through policy, human approval, a signed proof, execution, and a signed receipt. Replays are blocked. All cryptography runs in your browser."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -18,9 +18,9 @@
     <script type="importmap">
       {
         "imports": {
-          "@proofrail/core": "./vendor/core/index.js",
-          "@proofrail/mcp-gateway": "./vendor/gateway/index.js",
-          "@proofrail/provider-local": "./vendor/provider/index.js"
+          "@permitrail/core": "./vendor/core/index.js",
+          "@permitrail/mcp-gateway": "./vendor/gateway/index.js",
+          "@permitrail/provider-local": "./vendor/provider/index.js"
         }
       }
     </script>
@@ -30,13 +30,13 @@
 
     <header class="bar">
       <div class="bar-left">
-        <span class="logo">PROOFRAIL</span>
+        <span class="logo">PERMITRAIL</span>
         <span class="tag">working name</span>
       </div>
       <nav class="bar-right">
         <span class="dot" id="engineDot"></span>
         <span class="muted" id="engineState">booting crypto engine</span>
-        <a href="https://github.com/chokonaira/proofrail">GitHub</a>
+        <a href="https://github.com/chokonaira/permitrail">GitHub</a>
       </nav>
     </header>
 
@@ -45,7 +45,7 @@
         <p class="eyebrow">// authorization + proof + audit for AI agent actions</p>
         <h1>Every agent action gets a warrant<span class="caret">_</span></h1>
         <p class="lede">
-          Agents now send mail, move money, and delete data. Proofrail sits in front of those
+          Agents now send mail, move money, and delete data. PermitRail sits in front of those
           actions: policy decides, a human or credential approves the exact action, a short-lived
           signed proof is issued, and a signed receipt lands in the audit log. Run it below. Nothing
           is faked. Ed25519 runs in this browser.

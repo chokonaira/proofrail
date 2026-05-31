@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { createProofrailKeyPair, createActionReceipt, verifyActionReceipt } from '../src/index.ts';
+import { createPermitRailKeyPair, createActionReceipt, verifyActionReceipt } from '../src/index.ts';
 
 test('receipts carry multi-agent chain correlation and stay signed', async () => {
-  const keys = await createProofrailKeyPair();
+  const keys = await createPermitRailKeyPair();
   const chainId = 'chain_demo_1';
 
   // Step 1: a research agent acts.

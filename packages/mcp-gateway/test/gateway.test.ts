@@ -1,14 +1,14 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { ProofrailGateway, InMemoryAuditLog, createProofrailMcpTools } from '../src/index.ts';
-import { LocalApprovalProvider } from '@proofrail/provider-local';
-import { createProofrailKeyPair, verifyActionReceipt } from '@proofrail/core';
-import type { ProofrailPolicy } from '@proofrail/core';
+import { PermitRailGateway, InMemoryAuditLog, createPermitRailMcpTools } from '../src/index.ts';
+import { LocalApprovalProvider } from '@permitrail/provider-local';
+import { createPermitRailKeyPair, verifyActionReceipt } from '@permitrail/core';
+import type { PermitRailPolicy } from '@permitrail/core';
 import type { AuditSink } from '../src/index.ts';
 
 const policy = {
-  version: 'proofrail.policy.v1',
+  version: 'permitrail.policy.v1',
   id: 'gateway-test',
   tools: {
     'database.delete_rows': {
@@ -21,7 +21,7 @@ const policy = {
       },
     },
   },
-} satisfies ProofrailPolicy;
+} satisfies PermitRailPolicy;
 
 const deleteAction = {
   tool: 'database.delete_rows',
@@ -33,8 +33,8 @@ const deleteAction = {
 
 async function buildGateway(auditSink?: AuditSink) {
   const provider = await LocalApprovalProvider.create();
-  const receiptKeyPair = await createProofrailKeyPair({ kid: 'gateway-test-receipts' });
-  const gateway = new ProofrailGateway({
+  const receiptKeyPair = await createPermitRailKeyPair({ kid: 'gateway-test-receipts' });
+  const gateway = new PermitRailGateway({
     policy,
     provider,
     trustedProofKeys: [provider.publicKeyPem],
@@ -46,7 +46,7 @@ async function buildGateway(auditSink?: AuditSink) {
 
 test('gateway requires a receipt key pair', () => {
   // @ts-expect-error receiptKeyPair is required
-  assert.throws(() => new ProofrailGateway({ policy }), /receiptKeyPair/);
+  assert.throws(() => new PermitRailGateway({ policy }), /receiptKeyPair/);
 });
 
 test('gateway returns proof challenge when tool call is not authorized yet', async () => {
@@ -132,19 +132,19 @@ test('every execution receipt reaches the audit sink and verifies', async () => 
 
 test('mcp tools authorize calls and expose challenge status', async () => {
   const { provider, gateway } = await buildGateway();
-  const mcp = createProofrailMcpTools({ gateway, provider });
+  const mcp = createPermitRailMcpTools({ gateway, provider });
 
-  const decision = await mcp.callTool('proofrail_authorize_tool_call', { action: deleteAction });
+  const decision = await mcp.callTool('permitrail_authorize_tool_call', { action: deleteAction });
 
   assert.equal(typeof decision, 'object');
   assert.ok(decision);
-  const authorization = decision as Awaited<ReturnType<ProofrailGateway['authorize']>>;
+  const authorization = decision as Awaited<ReturnType<PermitRailGateway['authorize']>>;
   assert.equal(authorization.outcome, 'require_proof');
   if (authorization.outcome !== 'require_proof' || !authorization.challenge) {
     throw new Error('Expected proof challenge');
   }
 
-  const challenge = await mcp.callTool('proofrail_get_challenge', {
+  const challenge = await mcp.callTool('permitrail_get_challenge', {
     challengeId: authorization.challenge.id,
   });
 

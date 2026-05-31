@@ -7,7 +7,7 @@ import type {
   CreateActionReceiptInput,
   CreateProofInput,
   DateInput,
-  ProofrailKeyPair,
+  PermitRailKeyPair,
   ProofAction,
   ProofPayload,
   SignedEnvelope,
@@ -15,8 +15,8 @@ import type {
   VerifyProofOptions,
 } from './types.ts';
 
-export const PROOF_KIND = 'proofrail.proof.v1';
-export const ACTION_RECEIPT_KIND = 'proofrail.action_receipt.v1';
+export const PROOF_KIND = 'permitrail.proof.v1';
+export const ACTION_RECEIPT_KIND = 'permitrail.action_receipt.v1';
 
 export const ASSURANCE_LEVELS = Object.freeze([
   'self_attested',
@@ -29,7 +29,7 @@ export const ASSURANCE_LEVELS = Object.freeze([
 
 export async function createProof<TInput = unknown>(
   input: CreateProofInput<TInput>,
-  keyPair: ProofrailKeyPair,
+  keyPair: PermitRailKeyPair,
 ): Promise<SignedEnvelope<ProofPayload>> {
   const now = toDate(input.now || new Date());
   const ttlSeconds = input.ttlSeconds ?? 5 * 60;
@@ -108,7 +108,7 @@ export async function verifyProof(
 
 export async function createActionReceipt<TInput = unknown>(
   input: CreateActionReceiptInput<TInput>,
-  keyPair: ProofrailKeyPair,
+  keyPair: PermitRailKeyPair,
 ): Promise<SignedEnvelope<ActionReceiptPayload>> {
   invariant(input.action?.tool, 'MISSING_TOOL', 'Receipt action tool is required');
   invariant(input.action?.purpose, 'MISSING_PURPOSE', 'Receipt action purpose is required');

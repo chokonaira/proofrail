@@ -4,7 +4,7 @@ Policies decide whether a tool call is allowed, denied, or requires proof.
 
 ```ts
 export const policy = {
-  version: 'proofrail.policy.v1',
+  version: 'permitrail.policy.v1',
   id: 'production-policy',
   defaults: {
     unconfiguredTool: 'deny',

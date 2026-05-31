@@ -1,12 +1,12 @@
-import { createProofrailKeyPair } from '@proofrail/core';
-import { ProofrailGateway, InMemoryAuditLog } from '@proofrail/mcp-gateway';
-import { LocalApprovalProvider } from '@proofrail/provider-local';
+import { createPermitRailKeyPair } from '@permitrail/core';
+import { PermitRailGateway, InMemoryAuditLog } from '@permitrail/mcp-gateway';
+import { LocalApprovalProvider } from '@permitrail/provider-local';
 import { policy } from './policy.ts';
 
 const provider = await LocalApprovalProvider.create();
-const receiptKeyPair = await createProofrailKeyPair({ kid: 'proofrail-gateway-demo' });
+const receiptKeyPair = await createPermitRailKeyPair({ kid: 'permitrail-gateway-demo' });
 const auditLog = new InMemoryAuditLog();
-const gateway = new ProofrailGateway({
+const gateway = new PermitRailGateway({
   policy,
   provider,
   trustedProofKeys: [provider.publicKeyPem],
@@ -41,7 +41,7 @@ const legitimateEmail = {
   },
 };
 
-console.log('\nProofrail demo: proof-gated tool calls\n');
+console.log('\nPermitRail demo: proof-gated tool calls\n');
 
 console.log('1. Agent attempts a risky payment from an untrusted email.');
 const paymentAuth = await gateway.authorize(maliciousPayment);

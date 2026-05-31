@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { verifyActionReceipt, verifyProof } from '@proofrail/core';
+import { verifyActionReceipt, verifyProof } from '@permitrail/core';
 import { LocalApprovalProvider } from '../src/index.ts';
 
 test('local provider approves proof challenge', async () => {

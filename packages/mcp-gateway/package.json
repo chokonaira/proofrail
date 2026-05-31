@@ -1,13 +1,13 @@
 {
-  "name": "@proofrail/mcp-gateway",
+  "name": "@permitrail/mcp-gateway",
   "version": "0.1.0",
   "type": "module",
-  "description": "Permission and audit gateway for Proofrail, with MCP-ready tool definitions.",
+  "description": "Permission and audit gateway for PermitRail, with MCP-ready tool definitions.",
   "license": "Apache-2.0",
   "author": "Henry Okonkwo",
   "repository": {
     "type": "git",
-    "url": "https://github.com/chokonaira/proofrail.git",
+    "url": "https://github.com/chokonaira/permitrail.git",
     "directory": "packages/mcp-gateway"
   },
   "main": "./dist/index.js",
@@ -28,7 +28,7 @@
     "LICENSE"
   ],
   "dependencies": {
-    "@proofrail/core": "0.1.0"
+    "@permitrail/core": "0.1.0"
   },
   "engines": {
     "node": ">=20.0.0"
