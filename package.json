@@ -24,7 +24,8 @@
     "audit-trail"
   ],
   "scripts": {
-    "build": "tsc -b tsconfig.build.json --emitDeclarationOnly",
+    "build": "tsc -b tsconfig.build.json",
+    "clean": "rm -rf packages/*/dist packages/*/*.tsbuildinfo",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "node --conditions=development --experimental-strip-types --test \"packages/**/*.test.ts\" \"examples/**/*.test.ts\"",
     "demo": "node --conditions=development --experimental-strip-types examples/restricted-action-agent/demo.ts",
@@ -32,7 +33,7 @@
     "prepack": "npm run build"
   },
   "engines": {
-    "node": ">=24.0.0"
+    "node": ">=22.6.0"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
