@@ -44,11 +44,10 @@ A proof issued for one action is reused for a different action.
 
 Mitigation:
 
-- purpose binding
-- audience binding
-- subject binding
-- expiration
-- nonce
+- purpose, audience, and subject binding
+- expiration and a per-proof nonce
+- single-use enforcement: the gateway consumes a proof by id before the tool
+  runs, so a still-valid proof cannot be replayed against the same action
 - optional action input hash
 
 ### Confused Deputy
@@ -81,6 +80,17 @@ Mitigation:
 - key rotation must be supported before production use
 - receipts preserve issuer key id
 - production deployments should monitor unexpected proof volume
+
+### Webhook Provider Trust
+
+The webhook approval provider treats its configured endpoint as the approver. It
+posts each challenge to that URL and signs a proof when the endpoint approves.
+
+- the endpoint URL is operator configuration, not agent or attacker input
+- the endpoint and any service behind it sit inside the trust boundary; a
+  compromised endpoint can approve actions, so secure and authenticate it
+- the default transport applies a request timeout so a hung endpoint cannot
+  stall the gateway
 
 ## Out Of Scope
 

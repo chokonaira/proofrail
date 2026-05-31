@@ -40,19 +40,25 @@ export interface WebhookApprovalProviderOptions {
   readonly headers?: Record<string, string>;
   readonly assurance?: AssuranceLevel;
   readonly transport?: WebhookTransport;
+  // Aborts the default fetch transport after this many milliseconds so a hung
+  // approval endpoint cannot stall the gateway. Defaults to 10000.
+  readonly timeoutMs?: number;
 }
 
-const defaultTransport: WebhookTransport = async ({ url, headers, payload }) => {
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json', ...headers },
-    body: JSON.stringify(payload),
-  });
-  if (!response.ok) {
-    throw new Error(`Webhook approval endpoint returned ${response.status}`);
-  }
-  return (await response.json()) as WebhookDecision;
-};
+function createFetchTransport(timeoutMs: number): WebhookTransport {
+  return async ({ url, headers, payload }) => {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', ...headers },
+      body: JSON.stringify(payload),
+      signal: AbortSignal.timeout(timeoutMs),
+    });
+    if (!response.ok) {
+      throw new Error(`Webhook approval endpoint returned ${response.status}`);
+    }
+    return (await response.json()) as WebhookDecision;
+  };
+}
 
 /**
  * Routes each approval request to an HTTP endpoint (a Slack bot, a risk engine,
@@ -84,7 +90,7 @@ export class WebhookApprovalProvider implements ProofProvider {
     this.challenges = new Map();
     this.#headers = options.headers || {};
     this.#assurance = options.assurance || 'human_approved';
-    this.#transport = options.transport || defaultTransport;
+    this.#transport = options.transport || createFetchTransport(options.timeoutMs ?? 10_000);
   }
 
   static async create(
