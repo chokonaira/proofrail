@@ -3,6 +3,7 @@ name: pages
 on:
   push:
     branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -21,9 +22,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/configure-pages@v5
+      - uses: actions/setup-node@v4
         with:
-          enablement: true
+          node-version: 24
+      - run: npm install
+      # Builds the packages and copies dist into site/vendor so the sandbox has
+      # its code (site/vendor is gitignored).
+      - run: npm run build:sandbox
+      - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site
