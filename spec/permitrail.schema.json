@@ -1,0 +1,229 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://permitrail.dev/spec/permitrail.schema.json",
+  "title": "PermitRail Protocol",
+  "description": "Language-agnostic JSON contracts for PermitRail proofs, receipts, actions, and policies.",
+  "type": "object",
+  "$defs": {
+    "jsonValue": {
+      "description": "A JSON-serializable value.",
+      "anyOf": [
+        { "type": "null" },
+        { "type": "boolean" },
+        { "type": "number" },
+        { "type": "string" },
+        {
+          "type": "array",
+          "items": { "$ref": "#/$defs/jsonValue" }
+        },
+        {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/$defs/jsonValue" }
+        }
+      ]
+    },
+    "assuranceLevel": {
+      "type": "string",
+      "enum": [
+        "self_attested",
+        "account_controlled",
+        "human_approved",
+        "provider_verified",
+        "credential_verified",
+        "qualified_trust"
+      ]
+    },
+    "envelopeHeader": {
+      "type": "object",
+      "required": ["alg", "kid", "typ"],
+      "properties": {
+        "alg": { "const": "EdDSA" },
+        "kid": { "type": "string", "minLength": 1 },
+        "typ": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": { "$ref": "#/$defs/jsonValue" }
+    },
+    "agentAction": {
+      "type": "object",
+      "required": ["tool", "audience", "subject", "purpose"],
+      "properties": {
+        "tool": { "type": "string", "minLength": 1 },
+        "audience": { "type": "string", "minLength": 1 },
+        "subject": { "type": "string", "minLength": 1 },
+        "purpose": { "type": "string", "minLength": 1 },
+        "risk": { "type": "string" },
+        "input": { "$ref": "#/$defs/jsonValue" }
+      },
+      "additionalProperties": false
+    },
+    "proofAction": {
+      "type": "object",
+      "required": ["tool", "audience", "subject", "purpose"],
+      "properties": {
+        "tool": { "type": "string", "minLength": 1 },
+        "audience": { "type": "string", "minLength": 1 },
+        "subject": { "type": "string", "minLength": 1 },
+        "purpose": { "type": "string", "minLength": 1 },
+        "risk": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "signedEnvelope": {
+      "type": "object",
+      "required": ["protected", "payload", "signature"],
+      "properties": {
+        "protected": { "$ref": "#/$defs/envelopeHeader" },
+        "payload": { "type": "object" },
+        "signature": {
+          "type": "string",
+          "description": "Base64url encoded Ed25519 signature over canonical JSON of protected header and payload."
+        }
+      },
+      "additionalProperties": false
+    },
+    "proofPayload": {
+      "type": "object",
+      "required": [
+        "kind",
+        "id",
+        "claim",
+        "value",
+        "subject",
+        "audience",
+        "purpose",
+        "provider",
+        "assurance",
+        "nonce",
+        "issuedAt",
+        "expiresAt"
+      ],
+      "properties": {
+        "kind": { "const": "permitrail.proof.v1" },
+        "id": { "type": "string", "minLength": 1 },
+        "requestId": { "type": "string" },
+        "challengeId": { "type": "string" },
+        "claim": { "type": "string", "minLength": 1 },
+        "value": { "$ref": "#/$defs/jsonValue" },
+        "subject": { "type": "string", "minLength": 1 },
+        "audience": { "type": "string", "minLength": 1 },
+        "purpose": { "type": "string", "minLength": 1 },
+        "provider": { "type": "string", "minLength": 1 },
+        "assurance": { "$ref": "#/$defs/assuranceLevel" },
+        "nonce": { "type": "string", "minLength": 16 },
+        "issuedAt": { "type": "string", "format": "date-time" },
+        "expiresAt": { "type": "string", "format": "date-time" },
+        "action": { "$ref": "#/$defs/proofAction" },
+        "actionInputHash": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+        "evidenceHash": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/$defs/jsonValue" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "actionReceiptPayload": {
+      "type": "object",
+      "required": ["kind", "id", "action", "decision", "issuedAt"],
+      "properties": {
+        "kind": { "const": "permitrail.action_receipt.v1" },
+        "id": { "type": "string", "minLength": 1 },
+        "action": { "$ref": "#/$defs/proofAction" },
+        "decision": { "type": "string", "minLength": 1 },
+        "reason": { "type": "string" },
+        "policyId": { "type": "string" },
+        "proofId": { "type": "string" },
+        "proofClaim": { "type": "string" },
+        "proofAssurance": { "$ref": "#/$defs/assuranceLevel" },
+        "inputHash": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+        "issuedAt": { "type": "string", "format": "date-time" },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/$defs/jsonValue" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "policy": {
+      "type": "object",
+      "required": ["version", "tools"],
+      "properties": {
+        "version": { "type": "string", "pattern": "^permitrail\\.policy\\.v[0-9]+$" },
+        "id": { "type": "string" },
+        "defaults": {
+          "type": "object",
+          "properties": {
+            "unconfiguredTool": { "enum": ["allow", "deny"] }
+          },
+          "additionalProperties": false
+        },
+        "tools": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "mode": { "enum": ["allow", "deny"] },
+              "reason": { "type": "string" },
+              "risk": { "type": "string" },
+              "require": {
+                "type": "object",
+                "required": ["claim"],
+                "properties": {
+                  "claim": { "type": "string", "minLength": 1 },
+                  "value": { "$ref": "#/$defs/jsonValue" },
+                  "subject": { "type": "string" },
+                  "audience": { "type": "string" },
+                  "purpose": { "type": "string" },
+                  "assurance": {
+                    "anyOf": [
+                      { "$ref": "#/$defs/assuranceLevel" },
+                      {
+                        "type": "array",
+                        "items": { "$ref": "#/$defs/assuranceLevel" },
+                        "minItems": 1
+                      }
+                    ]
+                  },
+                  "minAssurance": { "$ref": "#/$defs/assuranceLevel" },
+                  "maxAgeSeconds": { "type": "integer", "minimum": 1 },
+                  "ttlSeconds": { "type": "integer", "minimum": 1, "maximum": 86400 },
+                  "bindActionInputHash": { "type": "boolean" }
+                },
+                "additionalProperties": false
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "properties": {
+    "proofEnvelope": {
+      "allOf": [
+        { "$ref": "#/$defs/signedEnvelope" },
+        {
+          "type": "object",
+          "properties": {
+            "payload": { "$ref": "#/$defs/proofPayload" }
+          }
+        }
+      ]
+    },
+    "actionReceiptEnvelope": {
+      "allOf": [
+        { "$ref": "#/$defs/signedEnvelope" },
+        {
+          "type": "object",
+          "properties": {
+            "payload": { "$ref": "#/$defs/actionReceiptPayload" }
+          }
+        }
+      ]
+    },
+    "policy": { "$ref": "#/$defs/policy" }
+  },
+  "additionalProperties": false
+}

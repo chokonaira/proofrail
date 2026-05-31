@@ -1,0 +1,13 @@
+.DS_Store
+node_modules/
+coverage/
+dist/
+*.tsbuildinfo
+.env
+.env.*
+!.env.example
+*.log
+*.pem
+*.key
+*.crt
+agent-id-wedge-strategy.pdf

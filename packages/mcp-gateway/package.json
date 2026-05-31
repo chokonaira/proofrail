@@ -1,0 +1,26 @@
+{
+  "name": "@permitrail/mcp-gateway",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "MCP-facing permission gateway primitives for PermitRail.",
+  "license": "Apache-2.0",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "development": "./src/index.ts",
+      "import": "./src/index.ts"
+    }
+  },
+  "files": [
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "dependencies": {
+    "@permitrail/core": "0.1.0"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  }
+}

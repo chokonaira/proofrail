@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PermitRail Sandbox | Proof-gated tool calls for AI agents</title>
+    <meta
+      name="description"
+      content="PermitRail is a TypeScript-first permission layer for proof-gated AI agent tool calls, signed receipts, and auditable human approval."
+    >
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="https://github.com/chokonaira/permitrail">PermitRail</a>
+      <nav aria-label="Primary">
+        <a href="#demo">Sandbox</a>
+        <a href="#protocol">Protocol</a>
+        <a href="#channels">Channels</a>
+        <a href="https://github.com/chokonaira/permitrail">GitHub</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Hosted sandbox</p>
+          <h1>Signed permits before agents act.</h1>
+          <p class="lead">
+            PermitRail sits between an AI agent and sensitive tools. It blocks risky actions until a
+            purpose-bound proof exists, then writes a signed receipt for the audit trail.
+          </p>
+          <div class="actions">
+            <a class="button primary" href="https://github.com/chokonaira/permitrail">View the repo</a>
+            <a class="button secondary" href="#demo">See the sandbox flow</a>
+          </div>
+        </div>
+        <div class="terminal" aria-label="PermitRail sandbox output">
+          <div class="terminal-bar">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <pre><code>agent -> payments.create_transfer
+decision=require_proof
+challenge=challenge_...
+
+user denies risky payment
+receipt=receipt_...
+
+agent -> email.send
+decision=require_proof
+user approves exact action
+execution_ok=true</code></pre>
+        </div>
+      </section>
+
+      <section id="demo" class="section">
+        <div class="section-heading">
+          <p class="eyebrow">Runnable today</p>
+          <h2>A hostable UI for the real TypeScript demo.</h2>
+        </div>
+        <div class="split">
+          <div>
+            <p>
+              The sandbox shows an agent attempting a suspicious payment from an untrusted email,
+              then a legitimate email send. The payment is denied. The email requires approval,
+              receives a signed proof, executes, and produces a signed receipt.
+            </p>
+            <pre class="code"><code>npm install
+npm run check
+npm run demo</code></pre>
+          </div>
+          <ul class="checks" aria-label="Demo guarantees">
+            <li>Proof is bound to subject, audience, purpose, and input hash.</li>
+            <li>Replay against changed tool input is denied by policy.</li>
+            <li>Every allow, block, or denial can produce a signed receipt.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="protocol" class="section band">
+        <div class="section-heading">
+          <p class="eyebrow">Language-agnostic core</p>
+          <h2>TypeScript SDK, portable protocol.</h2>
+        </div>
+        <div class="grid">
+          <article>
+            <h3>TypeScript-first</h3>
+            <p>Strict types for policies, actions, proof envelopes, providers, and gateway results.</p>
+          </article>
+          <article>
+            <h3>Signed JSON</h3>
+            <p>Ed25519 envelopes make proofs and receipts verifiable outside the SDK.</p>
+          </article>
+          <article>
+            <h3>Sidecar-ready</h3>
+            <p>Java, Go, Python, and .NET services can call a PermitRail gateway over HTTP.</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="channels" class="section">
+        <div class="section-heading">
+          <p class="eyebrow">Approval roadmap</p>
+          <h2>One permission model, multiple approval channels.</h2>
+        </div>
+        <div class="channels">
+          <span>Local approval</span>
+          <span>Passkey</span>
+          <span>Email magic link</span>
+          <span>Slack or Teams</span>
+          <span>GitHub review</span>
+          <span>Credential wallet</span>
+        </div>
+        <p class="note">
+          V0 includes local approval for demos and internal tools. External channels will be adapters
+          that issue the same proof format, so applications do not need to change policy logic.
+        </p>
+      </section>
+    </main>
+  </body>
+</html>
