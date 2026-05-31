@@ -52,6 +52,8 @@
         "subject": { "type": "string", "minLength": 1 },
         "purpose": { "type": "string", "minLength": 1 },
         "risk": { "type": "string" },
+        "chainId": { "type": "string" },
+        "parentId": { "type": "string" },
         "input": { "$ref": "#/$defs/jsonValue" }
       },
       "additionalProperties": false
@@ -132,6 +134,8 @@
         "decision": { "type": "string", "minLength": 1 },
         "reason": { "type": "string" },
         "policyId": { "type": "string" },
+        "chainId": { "type": "string" },
+        "parentId": { "type": "string" },
         "proofId": { "type": "string" },
         "proofClaim": { "type": "string" },
         "proofAssurance": { "$ref": "#/$defs/assuranceLevel" },

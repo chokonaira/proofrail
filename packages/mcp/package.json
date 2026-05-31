@@ -1,0 +1,43 @@
+{
+  "name": "@proofrail/mcp",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Zero-dependency MCP server that gates AI agent tool calls through Proofrail.",
+  "license": "Apache-2.0",
+  "author": "Henry Okonkwo",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chokonaira/proofrail.git",
+    "directory": "packages/mcp"
+  },
+  "bin": {
+    "proofrail-mcp": "./dist/bin.js"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "development": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "dependencies": {
+    "@proofrail/core": "0.1.0",
+    "@proofrail/mcp-gateway": "0.1.0",
+    "@proofrail/provider-local": "0.1.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

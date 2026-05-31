@@ -38,6 +38,10 @@ export interface AgentAction<TInput = unknown> {
   readonly subject: string;
   readonly purpose: string;
   readonly risk?: string;
+  // Correlate a multi-agent workflow: every action in one chain shares chainId,
+  // and parentId points at the upstream step's receipt id. Both optional.
+  readonly chainId?: string;
+  readonly parentId?: string;
   readonly input?: TInput;
 }
 
@@ -118,6 +122,8 @@ export interface ActionReceiptPayload {
   readonly decision: string;
   readonly reason?: string;
   readonly policyId?: string;
+  readonly chainId?: string;
+  readonly parentId?: string;
   readonly proofId?: string;
   readonly proofClaim?: string;
   readonly proofAssurance?: AssuranceLevel;

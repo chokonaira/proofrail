@@ -125,6 +125,8 @@ export async function createActionReceipt<TInput = unknown>(
     decision: input.decision,
     reason: input.reason,
     policyId: input.policyId,
+    chainId: input.action.chainId,
+    parentId: input.action.parentId,
     proofId: proofPayload?.id,
     proofClaim: proofPayload?.claim,
     proofAssurance: proofPayload?.assurance,
