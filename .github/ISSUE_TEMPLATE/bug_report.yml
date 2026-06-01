@@ -1,0 +1,79 @@
+name: Bug report
+description: Report a reproducible PermitRail bug.
+title: "bug: "
+labels: ["bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug. Do not include secrets, private keys, access tokens, raw personal data, or exploitable vulnerability details. Use the private security advisory link for security issues.
+  - type: dropdown
+    id: package
+    attributes:
+      label: Affected package
+      options:
+        - "@permitrail/core"
+        - "@permitrail/mcp-gateway"
+        - "@permitrail/provider-local"
+        - "@permitrail/provider-webhook"
+        - "@permitrail/mcp"
+        - "docs / README"
+        - "sandbox"
+        - "not sure"
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Package version, commit SHA, or "main".
+      placeholder: "0.1.0"
+    validations:
+      required: true
+  - type: input
+    id: runtime
+    attributes:
+      label: Runtime
+      description: Node, browser, Deno, Bun, edge runtime, or MCP client.
+      placeholder: "Node 24.11.0"
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Minimal reproduction
+      description: Include the smallest code, policy, proof, or command that reproduces the bug.
+      placeholder: |
+        npm install ...
+        node ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or receipts
+      description: Paste only redacted output. Do not include secrets or raw personal data.
+      render: text
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-flight checklist
+      options:
+        - label: I checked the README and relevant docs.
+          required: true
+        - label: I removed secrets, private keys, tokens, and personal data from this report.
+          required: true
+        - label: This is not an exploitable security vulnerability.
+          required: true

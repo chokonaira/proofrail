@@ -1,0 +1,60 @@
+name: Feature request
+description: Propose a package, provider, integration, or protocol improvement.
+title: "feat: "
+labels: ["enhancement", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        PermitRail is security-sensitive infrastructure. Feature requests are most useful when they describe the trust boundary, expected behavior, and security impact.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - "core protocol"
+        - "policy model"
+        - "gateway / replay guard / audit sink"
+        - "MCP server"
+        - "approval provider"
+        - "documentation"
+        - "sandbox"
+        - "other"
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What are you trying to build or protect?
+      placeholder: "I need PermitRail to..."
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Describe the API, package, adapter, or behavior you want.
+    validations:
+      required: true
+  - type: textarea
+    id: security
+    attributes:
+      label: Security and trust boundary
+      description: Who is trusted, what is signed, what can be replayed, and what data is exposed?
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: What did you try or consider instead?
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-flight checklist
+      options:
+        - label: I checked the README, roadmap, and existing issues first.
+          required: true
+        - label: I included the security impact or trust-boundary change.
+          required: true

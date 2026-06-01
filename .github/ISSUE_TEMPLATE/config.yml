@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a security vulnerability
+    url: https://github.com/chokonaira/permitrail/security/advisories/new
+    about: Please report exploitable vulnerabilities privately, not in public issues.
+  - name: Read the security policy
+    url: https://github.com/chokonaira/permitrail/blob/main/SECURITY.md
+    about: Scope, reporting guidance, and security design principles.

@@ -1,0 +1,41 @@
+name: Docs or question
+description: Ask for clarification or report confusing documentation.
+title: "docs: "
+labels: ["documentation", "needs-triage"]
+body:
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - "README"
+        - "production guide"
+        - "MCP docs"
+        - "policy docs"
+        - "threat model"
+        - "package README"
+        - "sandbox"
+        - "other"
+    validations:
+      required: true
+  - type: textarea
+    id: question
+    attributes:
+      label: What is confusing?
+      description: Tell us what you were trying to do and where the docs lost you.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What would have helped?
+      description: A missing example, clearer wording, diagram, integration note, or package guidance.
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-flight checklist
+      options:
+        - label: I checked the README and relevant docs first.
+          required: true
+        - label: I did not include secrets, tokens, private keys, or personal data.
+          required: true

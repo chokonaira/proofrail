@@ -15,11 +15,16 @@ site/api/
 *.key
 *.crt
 
-# local image assets (source art + generated social/OG previews)
+# Local strategy notes and source material. Keep public docs in README.md, docs/,
+# SECURITY.md, ROADMAP.md, and the package READMEs.
+agent-id-wedge-strategy.pdf
+agent-id-*.pdf
+*-wedge-strategy.pdf
+
+# Local image assets (source art + generated social/OG previews).
+# Commit intentional public images with git add -f only after review.
 *.png
 *.jpg
 *.jpeg
 *.webp
 *.gif
-
-agent-id-wedge-strategy.pdf
