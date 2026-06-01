@@ -25,7 +25,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24
-      - run: npm install
+      - run: npm ci
       # Builds the packages and copies dist into site/vendor so the sandbox has
       # its code (site/vendor is gitignored).
       - run: npm run build:sandbox
