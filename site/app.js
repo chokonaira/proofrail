@@ -93,7 +93,18 @@ let lastAction = null;
 let callCount = 0;
 let ready = false;
 let busy = false;
+let runMode = 'ready';
+const mobileFlow = window.matchMedia('(max-width: 860px)');
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const runLabels = {
+  ready: 'Run policy check',
+  checking: 'Checking policy...',
+  approval: 'Awaiting approval',
+  execute: 'Proof ready',
+  receipt: 'Edit request to rerun',
+  working: 'Working...',
+};
 
 async function init() {
   provider = await LocalApprovalProvider.create();
@@ -115,17 +126,17 @@ async function init() {
   renderPresets();
   loadPreset(0);
   ready = true;
-  $('runBtn').disabled = false;
+  setRunMode('ready');
 }
 
 // Every call runs through here so the console shows an in-flight state.
 // The spinner reads as a real request; the latency badge still reports the
 // true compute time measured around the call itself.
-async function withBusy(fn) {
+async function withBusy(fn, busyLabel = 'working') {
   if (busy) return;
   busy = true;
-  setBusy(true);
-  await sleep(200);
+  setBusy(true, busyLabel);
+  await sleep(busyLabel === 'checking' ? 260 : 180);
   try {
     await fn();
   } finally {
@@ -134,15 +145,60 @@ async function withBusy(fn) {
   }
 }
 
-function setBusy(on) {
+function setBusy(on, busyLabel = 'working') {
   if (on) {
     $('spinner').removeAttribute('hidden');
     setStatus('running', 'running', null);
   } else {
     $('spinner').setAttribute('hidden', '');
   }
-  $('runBtn').disabled = on || !ready;
+  const run = $('runBtn');
+  run.disabled = on || !ready || runMode !== 'ready';
+  run.textContent = on ? runLabels[busyLabel] : runLabels[runMode];
   for (const b of document.querySelectorAll('.call-btn')) b.disabled = on;
+}
+
+function setRunMode(mode) {
+  runMode = mode;
+  const run = $('runBtn');
+  run.dataset.mode = mode;
+  run.textContent = runLabels[mode];
+  run.disabled = busy || !ready || mode !== 'ready';
+}
+
+function setEditorState(text, state) {
+  const el = $('editorState');
+  el.textContent = text;
+  el.dataset.state = state;
+}
+
+function setFlowStep(step) {
+  for (const el of document.querySelectorAll('.flow-step')) {
+    const active = el.dataset.step === step;
+    el.dataset.state = active ? 'active' : '';
+    el.setAttribute('aria-current', active ? 'step' : 'false');
+  }
+}
+
+function focusStep(step) {
+  setFlowStep(step);
+  const target =
+    step === 'approval' ? $('callActions') :
+    step === 'receipt' ? $('resBody') :
+    step === 'policy' ? $('statusPill') :
+    $('reqBody');
+  if (!target) return;
+  pulseTarget(target);
+  if (mobileFlow.matches) {
+    const behavior = reducedMotion.matches ? 'auto' : 'smooth';
+    requestAnimationFrame(() => target.scrollIntoView({ behavior, block: 'center' }));
+  }
+}
+
+function pulseTarget(target) {
+  target.classList.remove('focus-pulse');
+  void target.offsetWidth;
+  target.classList.add('focus-pulse');
 }
 
 function renderPresets() {
@@ -170,10 +226,15 @@ function loadPreset(i, btn) {
 function resetCall() {
   challenge = null;
   proof = null;
+  tamperedProof = null;
   tampered = false;
+  lastAction = null;
   hide('reqError');
   setStatus('idle', 'idle', null);
   setActions([]);
+  setRunMode('ready');
+  setFlowStep('request');
+  setEditorState('ready to edit', 'ready');
   showCode($('resBody'), '// run a call to see the real response from the package');
   showCode($('eqCode'), '// the call you run shows up here');
 }
@@ -217,6 +278,7 @@ async function runAuthorize() {
   tampered = false;
 
   try {
+    setFlowStep('policy');
     const { r: decision, ms } = await timed(() => mcp.callTool('permitrail_authorize_tool_call', { action }));
     const kind = decision.outcome === 'allow' ? 'allow' : decision.outcome === 'require_proof' ? 'pending' : 'deny';
     setStatus(kind, decision.outcome, ms);
@@ -226,11 +288,17 @@ async function runAuthorize() {
 
     if (decision.outcome === 'require_proof' && decision.challenge) {
       challenge = decision.challenge;
+      setRunMode('approval');
       setActions([actApprove(), actDeny()]);
+      focusStep('approval');
     } else if (decision.outcome === 'allow') {
+      setRunMode('execute');
       setActions([actExecute()]);
+      focusStep('approval');
     } else {
+      setRunMode('receipt');
       setActions([]);
+      focusStep('receipt');
     }
   } catch (error) {
     failResponse(error);
@@ -247,7 +315,9 @@ async function approve() {
     showJson($('resBody'), signed);
     logCall('approval channel · signs proof', 'proof issued', ms, 'allow');
     showCode($('eqCode'), `// your approval channel signs a short-lived proof\nconst proof = await provider.approve(decision.challenge.id);`);
+    setRunMode('execute');
     setActions([actExecute(), actVerify(), actTamper()]);
+    focusStep('approval');
   } catch (error) {
     failResponse(error);
   }
@@ -261,7 +331,9 @@ async function deny() {
     showJson($('resBody'), receipt);
     logCall('approval channel · deny', 'denied', ms, 'deny');
     showCode($('eqCode'), `const receipt = await provider.deny(decision.challenge.id, { reason });`);
+    setRunMode('receipt');
     setActions([]);
+    focusStep('receipt');
   } catch (error) {
     failResponse(error);
   }
@@ -278,7 +350,9 @@ async function execute() {
       showJson($('resBody'), { ok: true, result: result.result, receipt: result.receipt });
       logCall('gateway.execute', 'allowed', ms, 'allow');
       showCode($('eqCode'), `const { ok, receipt } = await gateway.execute(action, runTool, {\n  proofEnvelope: proof,\n});`);
+      setRunMode('receipt');
       setActions([actReplay(), actVerify(), actTamper()]);
+      focusStep('receipt');
     }
   } catch (error) {
     failResponse(error);
@@ -295,7 +369,9 @@ async function replay() {
     showJson($('resBody'), { ok: result.ok, reason: result.receipt.payload.reason, receipt: result.receipt });
     logCall('gateway.execute · replay', 'replay blocked', ms, 'deny');
     showCode($('eqCode'), `// same proof, second time -> refused (single-use)`);
+    setRunMode('receipt');
     setActions([actVerify(), actTamper()]);
+    focusStep('receipt');
   } catch (error) {
     failResponse(error);
   }
@@ -310,6 +386,7 @@ async function verify() {
     showJson($('resBody'), res);
     logCall('permitrail_verify_proof', res.ok ? 'ok' : 'failed', ms, res.ok ? 'allow' : 'deny');
     showCode($('eqCode'), `// MCP tool: permitrail_verify_proof\nconst result = await verifyProof(proofEnvelope, { publicKeyPem });\n// result.ok === ${res.ok}`);
+    focusStep('receipt');
   } catch (error) {
     failResponse(error);
   }
@@ -332,6 +409,8 @@ async function toggleTamper() {
 function failResponse(error) {
   setStatus('deny', 'error', null);
   showJson($('resBody'), { error: String(error && error.message ? error.message : error) });
+  setRunMode('ready');
+  focusStep('receipt');
 }
 
 /* ---- contextual call buttons ---- */
@@ -354,6 +433,7 @@ function rebuildActions(actKeys) {
 function setActions(list) {
   const host = $('callActions');
   host.innerHTML = '';
+  host.dataset.state = list.length ? 'active' : 'empty';
   for (const a of list) {
     const btn = document.createElement('button');
     btn.type = 'button';
@@ -363,6 +443,7 @@ function setActions(list) {
     btn.addEventListener('click', () => withBusy(a.fn));
     host.appendChild(btn);
   }
+  if (list.length) pulseTarget(host);
 }
 
 /* ---- response + status + log ---- */
@@ -372,6 +453,7 @@ function setStatus(kind, text, ms) {
   pill.dataset.kind = kind;
   pill.textContent = text;
   $('latency').textContent = ms == null ? '' : `${ms.toFixed(1)} ms`;
+  pulseTarget(pill);
 }
 
 function logCall(tool, status, ms, kind) {
@@ -457,7 +539,26 @@ for (const btn of document.querySelectorAll('.copy-btn')) {
   });
 }
 
-$('runBtn').addEventListener('click', () => withBusy(runAuthorize));
+function markEditorEditing() {
+  document.querySelector('.cw-req')?.classList.add('is-editing');
+  setEditorState('editing', 'editing');
+}
+
+$('reqBody').addEventListener('pointerdown', markEditorEditing);
+$('reqBody').addEventListener('click', markEditorEditing);
+$('reqBody').addEventListener('focus', markEditorEditing);
+
+$('reqBody').addEventListener('blur', () => {
+  document.querySelector('.cw-req')?.classList.remove('is-editing');
+  if (runMode === 'ready') setEditorState('ready to run', 'ready');
+});
+
+$('reqBody').addEventListener('input', () => {
+  resetCall();
+  setEditorState('edited · run policy check', 'edited');
+});
+
+$('runBtn').addEventListener('click', () => withBusy(runAuthorize, 'checking'));
 
 init().catch((error) => {
   $('engineState').textContent = `engine error: ${error.message}`;

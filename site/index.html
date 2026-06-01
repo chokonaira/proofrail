@@ -14,7 +14,7 @@
       href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles.css?v=2026-06-01" />
     <script type="importmap">
       {
         "imports": {
@@ -113,6 +113,25 @@
           <p>Edit a tool call, run it, and watch the real package respond. Approve to sign a proof, execute it once, then replay it and watch it get refused.</p>
         </div>
 
+        <ol class="flow-steps" aria-label="Sandbox flow">
+          <li class="flow-step" id="flow-request" data-step="request" data-state="active">
+            <span>1</span>
+            <strong>Request</strong>
+          </li>
+          <li class="flow-step" id="flow-policy" data-step="policy">
+            <span>2</span>
+            <strong>Policy</strong>
+          </li>
+          <li class="flow-step" id="flow-approval" data-step="approval">
+            <span>3</span>
+            <strong>Approval</strong>
+          </li>
+          <li class="flow-step" id="flow-receipt" data-step="receipt">
+            <span>4</span>
+            <strong>Receipt</strong>
+          </li>
+        </ol>
+
         <div class="console-window">
           <div class="cw-bar">
             <span class="cw-dots" aria-hidden="true"><i></i><i></i><i></i></span>
@@ -130,7 +149,15 @@
                 <span class="method">call</span>
                 <span class="ep">permitrail_authorize_tool_call</span>
               </div>
-              <textarea id="reqBody" class="code-editor" spellcheck="false" aria-label="Editable tool call request"></textarea>
+              <div class="request-guide" id="requestHint">
+                <div>
+                  <span class="edit-spark" aria-hidden="true"></span>
+                  <strong>Editable request</strong>
+                  <span class="editor-state" id="editorState">ready to edit</span>
+                </div>
+                <p>Change the tool, recipient, amount, or purpose. PermitRail binds approval to this exact JSON.</p>
+              </div>
+              <textarea id="reqBody" class="code-editor" spellcheck="false" aria-label="Editable tool call request" aria-describedby="requestHint"></textarea>
               <p class="req-error" id="reqError" hidden></p>
               <div class="cw-run">
                 <button class="run-btn" id="runBtn" disabled>Run</button>
@@ -166,6 +193,6 @@
       </footer>
     </main>
 
-    <script type="module" src="app.js"></script>
+    <script type="module" src="app.js?v=2026-06-01"></script>
   </body>
 </html>
