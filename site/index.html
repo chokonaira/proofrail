@@ -35,7 +35,7 @@
       </div>
       <nav class="bar-right">
         <span class="dot" id="engineDot"></span>
-        <span class="muted" id="engineState">booting crypto engine</span>
+        <span class="muted" id="engineState">starting</span>
         <a href="https://github.com/chokonaira/permitrail/blob/main/docs/mcp.md">Docs</a>
         <a href="https://github.com/chokonaira/permitrail">GitHub</a>
       </nav>
@@ -43,12 +43,12 @@
 
     <main>
       <section class="hero">
-        <p class="eyebrow">// live permission rail for agent tool calls</p>
-        <h1>Run an agent action through PermitRail<span class="caret">_</span></h1>
+        <p class="eyebrow">A working demo. Nothing here is faked.</p>
+        <h1>Run an agent action through PermitRail</h1>
         <p class="lede">
-          Pick a realistic action, run the policy gate, approve or deny the exact request, then see
-          the signed proof and audit receipt. The crypto and policy path run in this browser; the
-          downstream tools are simulated so the demo stays safe.
+          PermitRail decides whether an AI agent's action is allowed, asks a person to approve the
+          exact request, and signs a receipt anyone can verify. Pick one below and watch it happen.
+          The tools are simulated, so nothing is really sent or charged.
         </p>
         <div class="hero-actions">
           <a class="primary-link" href="#console">Run the sandbox</a>
@@ -64,7 +64,7 @@
 
       <section class="console" id="console">
         <div class="panel pick">
-          <h2 class="panel-title">01 - choose a realistic action</h2>
+          <h2 class="panel-title">Step 1 · pick an action</h2>
           <div class="scenarios" id="scenarios"></div>
           <div class="action-card">
             <div class="action-head">
@@ -78,7 +78,7 @@
               <strong id="acRecommendation">—</strong>
             </div>
             <p class="purpose" id="acPurpose">Select a scenario to load an action.</p>
-            <button class="run" id="runBtn" disabled>Run policy check</button>
+            <button class="run" id="runBtn" disabled>Check this action</button>
             <details class="input-details" id="inputDetails" open>
               <summary>Exact tool input</summary>
               <pre class="json" id="acInput"><code>{}</code></pre>
@@ -87,7 +87,7 @@
         </div>
 
         <div class="panel rail-panel">
-          <h2 class="panel-title">02 - approve, execute, prove</h2>
+          <h2 class="panel-title">Step 2 · what PermitRail does with it</h2>
           <ol class="rail" id="rail">
             <li class="stage" data-stage="authorize">
               <span class="node"></span>
@@ -114,29 +114,29 @@
                 <span class="stage-note" id="st-execute">tool runs, signed receipt is written</span>
               </div>
               <div class="stage-actions" id="executeActions" hidden>
-                <button class="mini go" id="executeBtn">Execute approved action</button>
-                <button class="mini replay" id="replayBtn" hidden>Simulate replay attack</button>
+                <button class="mini go" id="executeBtn">Run it once</button>
+                <button class="mini replay" id="replayBtn" hidden>Try the same proof again</button>
               </div>
             </li>
           </ol>
 
           <div class="readout">
             <div class="readout-head">
-              <span>live output</span>
-              <span id="readoutHint">policy decision appears here</span>
+              <span>result</span>
+              <span id="readoutHint">run the check to begin</span>
             </div>
             <div class="verdict" id="verdict" data-state="idle">
               <span class="verdict-label">decision</span>
               <span class="verdict-value" id="verdictValue">idle</span>
             </div>
-            <pre class="json out" id="output"><code>// the signed proof and receipt will appear here</code></pre>
+            <pre class="json out" id="output"><code>The signed proof and receipt will show here.</code></pre>
           </div>
         </div>
       </section>
 
       <section class="audit">
         <div class="audit-head">
-          <h2 class="panel-title">03 - signed audit trail <span class="muted">(tamper-evident)</span></h2>
+          <h2 class="panel-title">Step 3 · signed audit trail <span class="muted">(tamper-evident)</span></h2>
           <span class="count" id="auditCount">0 receipts</span>
         </div>
         <div class="audit-list" id="auditList">

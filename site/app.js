@@ -128,7 +128,7 @@ async function init() {
   });
 
   $('engineDot').classList.add('ready');
-  $('engineState').textContent = 'Ed25519 ready in-browser';
+  $('engineState').textContent = 'signing engine ready';
   renderScenarios();
 }
 
@@ -177,11 +177,11 @@ function selectScenario(key, btn) {
 
   resetRail();
   setVerdict('idle', 'ready');
-  note('readoutHint', 'select a CTA to move through the proof flow');
-  showJson($('output'), '// Run the policy check to see whether this action needs proof.', true);
+  note('readoutHint', 'run the check to begin');
+  showJson($('output'), 'Run the check to see whether this action needs approval.', true);
   const run = $('runBtn');
   run.disabled = false;
-  run.textContent = 'Run policy check';
+  run.textContent = 'Check this action';
   hide('approveActions');
   hide('executeActions');
   $('executeBtn').removeAttribute('hidden');
@@ -201,8 +201,8 @@ async function run() {
     challenge = decision.challenge;
     setStage('authorize', 'done');
     setStage('approve', 'active');
-    note('st-authorize', 'policy: proof required for this tool');
-    note('readoutHint', 'approval is now required');
+    note('st-authorize', 'policy says this action needs approval');
+    note('readoutHint', 'approve or reject it below');
     showJson($('output'), {
       decision: decision.outcome,
       reason: decision.reason,
@@ -231,8 +231,8 @@ async function approve() {
   proof = await provider.approve(challenge.id, { approvedBy: 'you@sandbox' });
   setStage('approve', 'done');
   setStage('execute', 'active');
-  note('st-approve', 'approved: proof signed for the exact action');
-  note('readoutHint', 'proof is ready; execute once');
+  note('st-approve', 'approved, a signed proof was issued for this exact request');
+  note('readoutHint', 'now run it once');
   hide('approveActions');
   showJson($('output'), proofView(proof));
   show('executeActions');
@@ -244,8 +244,8 @@ async function deny() {
   const receipt = await provider.deny(challenge.id, { reason: 'User rejected this action.' });
   setStage('approve', 'blocked');
   setVerdict('blocked', 'blocked');
-  note('st-approve', 'denied: signed denial receipt written');
-  note('readoutHint', 'denial receipt sealed');
+  note('st-approve', 'rejected, a signed receipt was saved');
+  note('readoutHint', 'rejected and recorded');
   hide('approveActions');
   showJson($('output'), receiptView(receipt));
   addReceipt(receipt);
@@ -260,8 +260,8 @@ async function execute() {
   if (result.ok) {
     setStage('execute', 'done');
     setVerdict('allowed', 'allowed');
-    note('st-execute', 'simulated tool ran once; signed receipt sealed');
-    note('readoutHint', 'try reusing the same proof');
+    note('st-execute', 'the action ran once and a signed receipt was saved');
+    note('readoutHint', 'now try reusing the same proof');
     showJson($('output'), { result: result.result, receipt: receiptView(result.receipt) });
     addReceipt(result.receipt);
     $('executeBtn').setAttribute('hidden', '');
@@ -277,8 +277,8 @@ async function replay() {
 
   setStage('execute', 'blocked');
   setVerdict('blocked', 'replay blocked');
-  note('st-execute', 'same proof, second attempt: refused');
-  note('readoutHint', 'single-use proof protection worked');
+  note('st-execute', 'same proof, second time: refused');
+  note('readoutHint', 'blocked, each proof works only once');
   showJson($('output'), { ok: result.ok, reason: result.receipt.payload.reason, receipt: receiptView(result.receipt) });
   addReceipt(result.receipt);
   $('replayBtn').setAttribute('hidden', '');
@@ -345,9 +345,9 @@ function setStage(name, status) {
 
 function resetRail() {
   for (const el of document.querySelectorAll('.stage')) el.removeAttribute('data-status');
-  note('st-authorize', 'policy evaluates the tool call');
-  note('st-approve', 'approve to mint proof, or deny to seal a receipt');
-  note('st-execute', 'approved actions run once, then write a receipt');
+  note('st-authorize', 'PermitRail checks this action against the policy');
+  note('st-approve', 'a person approves or rejects the exact request');
+  note('st-execute', 'the action runs once, then a signed receipt is saved');
 }
 
 function note(id, text) {
