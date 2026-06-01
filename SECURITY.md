@@ -12,10 +12,8 @@ Security fixes target the main branch and the most recently published packages.
 
 Please do not open public issues for exploitable vulnerabilities.
 
-Report privately by email:
-
-- security contact: `security@permitrail.dev` (placeholder until project email is live)
-- fallback: contact the maintainer through GitHub
+Report privately through GitHub: open a private advisory from the repository's
+Security tab ("Report a vulnerability"), or contact the maintainer through GitHub.
 
 Include:
 

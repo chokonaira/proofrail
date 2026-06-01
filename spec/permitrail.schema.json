@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://permitrail.dev/spec/permitrail.schema.json",
+  "$id": "https://github.com/chokonaira/permitrail/blob/main/spec/permitrail.schema.json",
   "title": "PermitRail Protocol",
   "description": "Language-agnostic JSON contracts for PermitRail proofs, receipts, actions, and policies.",
   "type": "object",
