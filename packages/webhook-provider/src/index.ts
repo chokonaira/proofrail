@@ -17,7 +17,8 @@ export interface WebhookDecision {
   readonly approvedBy?: string;
   readonly reason?: string;
   readonly value?: JsonValue;
-  readonly assurance?: AssuranceLevel;
+  // Note: the endpoint cannot set the assurance level. Assurance is fixed by the
+  // provider's operator configuration so a compromised endpoint cannot escalate.
 }
 
 export interface WebhookRequestPayload<TInput = unknown> {
@@ -79,6 +80,17 @@ export class WebhookApprovalProvider implements ProofProvider {
     if (!options?.endpoint) {
       throw new Error('WebhookApprovalProvider requires an endpoint URL.');
     }
+    let parsed: URL;
+    try {
+      parsed = new URL(options.endpoint);
+    } catch {
+      throw new Error('WebhookApprovalProvider endpoint must be a valid absolute URL.');
+    }
+    const isLocal =
+      parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1' || parsed.hostname === '::1';
+    if (parsed.protocol !== 'https:' && !(parsed.protocol === 'http:' && isLocal)) {
+      throw new Error('WebhookApprovalProvider endpoint must use https (http is allowed only for localhost).');
+    }
     if (!options?.keyPair?.privateKeyPem) {
       throw new Error(
         'WebhookApprovalProvider requires a keyPair. Use "await WebhookApprovalProvider.create({ endpoint })" to generate one, or pass your own.',
@@ -125,9 +137,16 @@ export class WebhookApprovalProvider implements ProofProvider {
 
     challenge.completedAt = new Date().toISOString();
 
-    if (!decision.approved) {
+    // Only an explicit boolean true approves. Anything else (false, missing, or
+    // a non-object response) denies. Assurance is fixed by operator config, so
+    // the endpoint cannot escalate it.
+    if (!decision || typeof decision !== 'object' || decision.approved !== true) {
       challenge.status = 'denied';
-      challenge.denialReason = decision.reason || 'Webhook endpoint denied the request';
+      const reason =
+        decision && typeof decision === 'object' && typeof decision.reason === 'string'
+          ? decision.reason
+          : undefined;
+      challenge.denialReason = reason || 'Webhook endpoint did not approve the request';
       return challenge;
     }
 
@@ -139,8 +158,11 @@ export class WebhookApprovalProvider implements ProofProvider {
         provider: this.provider,
         value: decision.value ?? request.value ?? true,
         subject: request.subject,
-        assurance: decision.assurance || this.#assurance,
-        metadata: { ...request.metadata, approvedBy: decision.approvedBy || 'webhook' },
+        assurance: this.#assurance,
+        metadata: {
+          ...request.metadata,
+          approvedBy: typeof decision.approvedBy === 'string' ? decision.approvedBy : 'webhook',
+        },
       },
       this.keyPair,
     );
