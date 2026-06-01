@@ -14,9 +14,13 @@ PermitRail sits in front of those actions. Policy decides, an approver signs off
 the exact action, a short-lived signed proof is issued, the tool runs once, and a
 signed receipt lands in your audit log.
 
-```txt
-agent ──▶ authorize ──▶ approve ──▶ execute ──▶ seal
-            policy        proof       tool       signed receipt
+```mermaid
+flowchart LR
+    A(["AI agent"]) --> P{"authorize<br/>policy"}
+    P -->|"needs approval"| V["approve<br/>signed proof"]
+    P -->|"deny"| X["blocked<br/>signed denial"]
+    V --> E["execute<br/>tool runs once"]
+    E --> S[("seal<br/>signed receipt")]
 ```
 
 [Live sandbox](https://chokonaira.github.io/permitrail/) · [Policy model](docs/policy.md) · [MCP server](docs/mcp.md) · [Threat model](docs/threat-model.md) · [Protocol schema](spec/permitrail.schema.json)
