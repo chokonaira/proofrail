@@ -25,6 +25,21 @@ flowchart LR
 
 [Live sandbox](https://chokonaira.github.io/permitrail/) · [API reference](https://chokonaira.github.io/permitrail/api/) · [Production guide](docs/production.md) · [Policy model](docs/policy.md) · [MCP server](docs/mcp.md) · [Threat model](docs/threat-model.md) · [Protocol schema](spec/permitrail.schema.json)
 
+## Choose your package
+
+PermitRail does not ship AI models. It ships small TypeScript packages for
+different integration points, so you install only the pieces you need.
+
+| You are building | Start with | Why |
+| --- | --- | --- |
+| An app or agent gateway | `npm install @permitrail/core @permitrail/mcp-gateway @permitrail/provider-webhook` | Production path for policy, approval, replay protection, and signed receipts |
+| A local demo or internal prototype | `npm install @permitrail/core @permitrail/mcp-gateway @permitrail/provider-local` | Fastest way to see the proof flow without wiring an external approval service |
+| An MCP client setup | `npx @permitrail/mcp` | Run PermitRail as a stdio MCP server in Claude Desktop, Cursor, or another MCP client |
+| A verifier service | `npm install @permitrail/core` | Verify proofs and receipts without running a gateway |
+
+Most app integrations use `@permitrail/core`, `@permitrail/mcp-gateway`, and one
+approval provider. MCP users can start with the runnable server.
+
 ## What it gives you
 
 - Per-tool policy: allow, deny, or require approval.
@@ -40,17 +55,7 @@ flowchart LR
 - Zero runtime dependencies. The same code runs on Node, browsers, Deno, Bun, and
   edge runtimes (Ed25519 and SHA-256 over the Web Crypto API).
 
-## Install
-
-PermitRail does not ship AI models. It ships small TypeScript packages for
-different integration points, so you install only the pieces you need.
-
-| If you want to | Install |
-| --- | --- |
-| Embed PermitRail in an app or agent gateway | `npm install @permitrail/core @permitrail/mcp-gateway @permitrail/provider-webhook` |
-| Build a local demo or internal prototype | `npm install @permitrail/core @permitrail/mcp-gateway @permitrail/provider-local` |
-| Add PermitRail to an MCP client | `npx @permitrail/mcp` |
-| Verify proofs or receipts in another service | `npm install @permitrail/core` |
+## Quick start
 
 For a quick in-process demo:
 
@@ -196,12 +201,11 @@ The protocol is portable. Policies, proofs, and receipts are JSON; signatures ar
 Ed25519; input binding is canonical JSON plus SHA-256. Any stack can verify a
 proof or receipt from [spec/permitrail.schema.json](spec/permitrail.schema.json).
 
-## Packages
+## Package reference
 
 PermitRail is split by trust boundary so teams can install only the surface they
-need. Most app integrations start with `@permitrail/core`,
-`@permitrail/mcp-gateway`, and one approval provider. MCP users can start with
-the runnable server.
+need. Use this table when you want the npm package pages and the role of each
+module.
 
 | Package | Use it when you need |
 | --- | --- |
