@@ -34,9 +34,11 @@
       <nav class="bar-right">
         <span class="dot" id="engineDot"></span>
         <span class="muted" id="engineState">starting</span>
-        <a href="https://www.npmjs.com/org/permitrail">npm</a>
-        <a href="https://github.com/chokonaira/permitrail/blob/main/docs/production.md">Production</a>
-        <a href="https://github.com/chokonaira/permitrail">GitHub</a>
+        <span class="bar-links">
+          <a href="https://www.npmjs.com/org/permitrail">npm</a>
+          <a href="https://github.com/chokonaira/permitrail/blob/main/docs/production.md">Production</a>
+          <a href="https://github.com/chokonaira/permitrail">GitHub</a>
+        </span>
       </nav>
     </header>
 
@@ -62,19 +64,19 @@
           </div>
         </div>
         <aside class="truth-card" aria-label="What is real in this sandbox">
-          <h2>What runs here</h2>
+          <h2>What's real here</h2>
           <div class="truth-row">
             <span class="truth-dot real"></span>
             <div>
-              <strong>Real PermitRail flow</strong>
-              <p>Policy evaluation, proof signing, replay blocking, and receipt signing run in your browser.</p>
+              <strong>Real cryptography, in this tab</strong>
+              <p>Ed25519 keys are generated and every proof and receipt is signed by <code>@permitrail/core</code> in your browser. Hit Verify to check a signature, or Tamper to watch it fail.</p>
             </div>
           </div>
           <div class="truth-row">
             <span class="truth-dot simulated"></span>
             <div>
-              <strong>Simulated downstream tools</strong>
-              <p>Email, payment, and database calls return sandbox results. Nothing is sent, charged, or deleted.</p>
+              <strong>Faked side effects only</strong>
+              <p>The email, payment, and database tools return canned JSON. No request leaves your browser. Nothing is sent, charged, or deleted.</p>
             </div>
           </div>
         </aside>
@@ -96,7 +98,7 @@
       <details class="mcp-config">
         <summary>Connect your own agent · MCP client config</summary>
         <div class="copy-wrap">
-          <button class="copy-btn" data-copy-target="cfg-mcp" type="button" aria-label="Copy MCP config">copy</button>
+          <button class="copy-btn dark" data-copy-target="cfg-mcp" type="button" aria-label="Copy MCP config">copy</button>
           <pre class="json"><code id="cfg-mcp">{
   "mcpServers": {
     "permitrail": { "command": "npx", "args": ["-y", "@permitrail/mcp"] }
@@ -141,6 +143,7 @@
               <div class="cw-head">
                 <span class="cw-label">Response</span>
                 <span class="cw-status">
+                  <span class="spinner" id="spinner" hidden aria-hidden="true"></span>
                   <span class="status-pill" id="statusPill" data-kind="idle">idle</span>
                   <span class="latency" id="latency"></span>
                 </span>

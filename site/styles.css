@@ -13,6 +13,21 @@
   --pending: #946400;
   --deny: #bd2f23;
   --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  /* dark console palette, also used by the dark snippets outside the console */
+  --d-bg: #0d1117;
+  --d-bg2: #010409;
+  --d-line: #21262d;
+  --d-line2: #30363d;
+  --d-text: #e6edf3;
+  --d-muted: #8b949e;
+  --d-dim: #6e7681;
+  --d-key: #79c0ff;
+  --d-str: #7ee787;
+  --d-num: #ffa657;
+  --d-green: #3fb950;
+  --d-amber: #d29922;
+  --d-red: #f85149;
+  --d-blue: #1f6feb;
 }
 
 * {
@@ -1313,11 +1328,11 @@ h1 {
 }
 .cw-muted { color: var(--d-dim); }
 .copy-btn.dark {
-  background: #161b22;
+  background: #1b2230;
   border-color: var(--d-line2);
-  color: var(--d-muted);
+  color: #e6edf3;
 }
-.copy-btn.dark:hover { color: var(--d-text); border-color: var(--d-dim); }
+.copy-btn.dark:hover { color: #ffffff; border-color: var(--d-dim); }
 .copy-btn.dark[data-copied] { color: var(--d-green); border-color: var(--d-green); }
 
 .call-log {
@@ -1371,4 +1386,109 @@ h1 {
   .call-btn { min-height: 44px; flex: 1; }
   .code-editor { min-height: 260px; }
   .preset, .copy-btn { min-height: 33px; }
+}
+
+/* ===== polish: copy feedback, dark snippets, spinner, real-feel ===== */
+.copy-btn[data-copied] {
+  color: #ffffff;
+  background: var(--allow);
+  border-color: var(--allow);
+}
+.copy-btn.dark[data-copied] {
+  color: #04130a;
+  background: var(--d-green);
+  border-color: var(--d-green);
+}
+
+/* dark terminal snippets for the install commands */
+.install-strip code {
+  background: #0d1117;
+  color: #e6edf3;
+  border: 1px solid #21262d;
+  border-radius: 7px;
+  padding: 9px 12px;
+  display: block;
+}
+.install-strip code::before {
+  content: "$ ";
+  color: #7ee787;
+}
+
+/* dark MCP config card, matches the console */
+.mcp-config {
+  background: #0d1117;
+  border-color: #010409;
+}
+.mcp-config > summary { color: #8b949e; }
+.mcp-config > summary:hover { color: #e6edf3; }
+.mcp-config .json {
+  background: #010409;
+  color: #e6edf3;
+  border-color: #21262d;
+}
+
+/* inline code inside the truth card */
+.truth-row code {
+  font-size: 11.5px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 1px 5px;
+  color: var(--ink);
+}
+
+/* in-flight spinner + running pill (scoped inside the dark console) */
+.spinner {
+  width: 13px;
+  height: 13px;
+  border: 2px solid var(--d-line2);
+  border-top-color: var(--d-green);
+  border-radius: 50%;
+  display: inline-block;
+  animation: spin 0.6s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.status-pill[data-kind="running"] {
+  color: #cae3ff;
+  border-color: var(--d-blue);
+  background: rgba(31, 111, 235, 0.15);
+}
+
+/* copied state: white text on green, both surfaces (authoritative) */
+.copy-btn[data-copied] {
+  color: #ffffff !important;
+  background: var(--allow) !important;
+  border-color: var(--allow) !important;
+}
+.copy-btn.dark[data-copied] {
+  color: #ffffff !important;
+  background: var(--d-green) !important;
+  border-color: var(--d-green) !important;
+}
+
+/* header nav links stay together; on mobile they drop to their own row as a group */
+.bar-links {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+/* request editor wraps long lines instead of clipping them */
+.code-editor {
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+/* long endpoint id never clips */
+.cw-endpoint {
+  flex-wrap: wrap;
+}
+.cw-endpoint .ep {
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+@media (max-width: 720px) {
+  .bar-links {
+    flex-basis: 100%;
+    gap: 16px;
+  }
+  .cw-endpoint { font-size: 11px; }
 }

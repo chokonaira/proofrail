@@ -91,6 +91,9 @@ let tamperedProof = null;
 let tampered = false;
 let lastAction = null;
 let callCount = 0;
+let ready = false;
+let busy = false;
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 async function init() {
   provider = await LocalApprovalProvider.create();
@@ -111,7 +114,35 @@ async function init() {
 
   renderPresets();
   loadPreset(0);
+  ready = true;
   $('runBtn').disabled = false;
+}
+
+// Every call runs through here so the console shows an in-flight state.
+// The spinner reads as a real request; the latency badge still reports the
+// true compute time measured around the call itself.
+async function withBusy(fn) {
+  if (busy) return;
+  busy = true;
+  setBusy(true);
+  await sleep(200);
+  try {
+    await fn();
+  } finally {
+    busy = false;
+    setBusy(false);
+  }
+}
+
+function setBusy(on) {
+  if (on) {
+    $('spinner').removeAttribute('hidden');
+    setStatus('running', 'running', null);
+  } else {
+    $('spinner').setAttribute('hidden', '');
+  }
+  $('runBtn').disabled = on || !ready;
+  for (const b of document.querySelectorAll('.call-btn')) b.disabled = on;
 }
 
 function renderPresets() {
@@ -284,7 +315,7 @@ async function verify() {
   }
 }
 
-function toggleTamper() {
+async function toggleTamper() {
   if (!proof) return;
   tampered = !tampered;
   if (tampered) {
@@ -295,7 +326,7 @@ function toggleTamper() {
   // refresh the tamper button label, then run a real verify so the effect is visible
   const actions = [...$('callActions').querySelectorAll('.call-btn')].map((b) => b.dataset.act);
   rebuildActions(actions);
-  verify();
+  await verify();
 }
 
 function failResponse(error) {
@@ -329,7 +360,7 @@ function setActions(list) {
     btn.className = `call-btn ${a.cls}`.trim();
     btn.dataset.act = a.act;
     btn.textContent = a.label;
-    btn.addEventListener('click', a.fn);
+    btn.addEventListener('click', () => withBusy(a.fn));
     host.appendChild(btn);
   }
 }
@@ -390,28 +421,43 @@ function highlight(input) {
 
 /* ---- copy buttons ---- */
 
-for (const btn of document.querySelectorAll('.copy-btn')) {
-  btn.addEventListener('click', async () => {
-    const target = document.getElementById(btn.dataset.copyTarget);
-    if (!target) return;
-    const text = target.textContent.trim();
-    const original = btn.textContent;
+async function copyText(text, target) {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch {
+    // Fallback for sandboxed iframes and contexts without the async clipboard:
+    // select the source and copy via the legacy command on the click gesture.
     try {
-      await navigator.clipboard.writeText(text);
-      btn.textContent = 'copied';
-      btn.dataset.copied = 'true';
-      setTimeout(() => { btn.textContent = original; btn.removeAttribute('data-copied'); }, 1300);
-    } catch {
       const range = document.createRange();
       range.selectNodeContents(target);
       const sel = window.getSelection();
       sel.removeAllRanges();
       sel.addRange(range);
+      const ok = document.execCommand('copy');
+      sel.removeAllRanges();
+      return ok;
+    } catch {
+      return false;
     }
+  }
+}
+
+for (const btn of document.querySelectorAll('.copy-btn')) {
+  btn.addEventListener('click', async () => {
+    const target = document.getElementById(btn.dataset.copyTarget);
+    if (!target) return;
+    await copyText(target.textContent.trim(), target);
+    btn.textContent = 'copied';
+    btn.dataset.copied = 'true';
+    setTimeout(() => {
+      btn.textContent = 'copy';
+      btn.removeAttribute('data-copied');
+    }, 1300);
   });
 }
 
-$('runBtn').addEventListener('click', runAuthorize);
+$('runBtn').addEventListener('click', () => withBusy(runAuthorize));
 
 init().catch((error) => {
   $('engineState').textContent = `engine error: ${error.message}`;
