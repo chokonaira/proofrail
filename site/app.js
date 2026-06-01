@@ -32,7 +32,7 @@ const policy = {
 const PRESETS = [
   {
     id: 'email',
-    label: 'email.send',
+    label: 'Send invoice email',
     action: {
       tool: 'email.send',
       audience: 'sales-agent',
@@ -43,7 +43,7 @@ const PRESETS = [
   },
   {
     id: 'payment',
-    label: 'payments.create_transfer',
+    label: 'Create payment transfer',
     action: {
       tool: 'payments.create_transfer',
       audience: 'finance-agent',
@@ -54,7 +54,7 @@ const PRESETS = [
   },
   {
     id: 'database',
-    label: 'database.delete_rows',
+    label: 'Delete database rows',
     action: {
       tool: 'database.delete_rows',
       audience: 'db-agent',
@@ -65,7 +65,7 @@ const PRESETS = [
   },
   {
     id: 'blank',
-    label: 'blank',
+    label: 'Custom request',
     action: {
       tool: 'your.tool',
       audience: 'my-agent',
@@ -209,16 +209,18 @@ function renderPresets() {
     btn.type = 'button';
     btn.className = 'preset';
     btn.textContent = p.label;
-    btn.setAttribute('aria-selected', 'false');
+    btn.title = p.action.tool;
+    btn.setAttribute('aria-label', `${p.label}: ${p.action.tool}`);
+    btn.setAttribute('aria-pressed', 'false');
     btn.addEventListener('click', () => loadPreset(i, btn));
     host.appendChild(btn);
   });
 }
 
 function loadPreset(i, btn) {
-  for (const el of document.querySelectorAll('.preset')) el.setAttribute('aria-selected', 'false');
+  for (const el of document.querySelectorAll('.preset')) el.setAttribute('aria-pressed', 'false');
   const target = btn || document.querySelectorAll('.preset')[i];
-  if (target) target.setAttribute('aria-selected', 'true');
+  if (target) target.setAttribute('aria-pressed', 'true');
   $('reqBody').value = JSON.stringify(PRESETS[i].action, null, 2);
   resetCall();
 }

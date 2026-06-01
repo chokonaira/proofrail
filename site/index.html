@@ -14,7 +14,7 @@
       href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="styles.css?v=2026-06-01" />
+    <link rel="stylesheet" href="styles.css?v=2026-06-02-scenarios" />
     <script type="importmap">
       {
         "imports": {
@@ -143,7 +143,14 @@
             <div class="cw-pane cw-req">
               <div class="cw-head">
                 <span class="cw-label">Request</span>
-                <span class="cw-presets" id="presets"></span>
+                <span class="cw-muted">exact action JSON</span>
+              </div>
+              <div class="scenario-picker" aria-labelledby="scenarioTitle">
+                <div class="scenario-copy">
+                  <strong id="scenarioTitle">Example requests</strong>
+                  <p>Start with a scenario or paste any agent tool call. The same policy/proof flow works for your own tools too.</p>
+                </div>
+                <div class="cw-presets" id="presets" role="group" aria-label="Example requests"></div>
               </div>
               <div class="cw-endpoint">
                 <span class="method">call</span>
@@ -152,10 +159,10 @@
               <div class="request-guide" id="requestHint">
                 <div>
                   <span class="edit-spark" aria-hidden="true"></span>
-                  <strong>Editable request</strong>
+                  <strong>Edit this exact request</strong>
                   <span class="editor-state" id="editorState">ready to edit</span>
                 </div>
-                <p>Change the tool, recipient, amount, or purpose. PermitRail binds approval to this exact JSON.</p>
+                <p>Change the tool, recipient, amount, purpose, or input. PermitRail binds approval to this exact JSON, not a generic permission.</p>
               </div>
               <textarea id="reqBody" class="code-editor" spellcheck="false" aria-label="Editable tool call request" aria-describedby="requestHint"></textarea>
               <p class="req-error" id="reqError" hidden></p>
@@ -193,6 +200,6 @@
       </footer>
     </main>
 
-    <script type="module" src="app.js?v=2026-06-01"></script>
+    <script type="module" src="app.js?v=2026-06-02-scenarios"></script>
   </body>
 </html>

@@ -1096,14 +1096,14 @@ h1 {
   white-space: nowrap;
 }
 .flow-step[data-state="active"] {
-  background: rgba(31, 111, 235, 0.14);
+  background: #dbeafe;
   border-color: #1f6feb;
-  color: #e6edf3;
+  color: var(--ink);
   transform: translateY(-1px);
 }
 .flow-step[data-state="active"] span {
   border-color: #58a6ff;
-  color: #79c0ff;
+  color: #1f6feb;
 }
 
 .console-window {
@@ -1199,31 +1199,67 @@ h1 {
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
-.cw-presets {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
+.cw-head .cw-muted {
+  border: 1px solid rgba(139, 148, 158, 0.38);
+  border-radius: 999px;
+  color: #c9d1d9;
+  font-size: 10px;
+  font-weight: 700;
   margin-left: auto;
-  justify-content: flex-end;
+  padding: 2px 8px;
+  text-transform: uppercase;
+}
+.scenario-picker {
+  align-items: start;
+  background: rgba(230, 237, 243, 0.045);
+  border: 1px solid rgba(139, 148, 158, 0.28);
+  border-radius: 10px;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1fr);
+  margin-bottom: 14px;
+  padding: 12px;
+}
+.scenario-copy strong {
+  color: #f0f6fc;
+  display: block;
+  font-size: 12px;
+  margin-bottom: 3px;
+}
+.scenario-copy p {
+  color: #c9d1d9;
+  font-size: 11.5px;
+  line-height: 1.5;
+  margin: 0;
+}
+.cw-presets {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-left: 0;
+  justify-content: stretch;
 }
 .preset {
-  background: #161b22;
-  border: 1px solid var(--d-line2);
-  color: var(--d-muted);
+  background: rgba(230, 237, 243, 0.07);
+  border: 1px solid rgba(139, 148, 158, 0.55);
+  color: var(--d-text);
   border-radius: 6px;
-  padding: 4px 9px;
-  font: 11px var(--mono);
+  padding: 6px 9px;
+  font: 700 11px var(--mono);
   cursor: pointer;
-  transition: color 0.12s, border-color 0.12s, background 0.12s;
+  text-align: center;
+  transition: color 0.12s, border-color 0.12s, background 0.12s, transform 0.12s;
 }
 .preset:hover {
-  color: var(--d-text);
-  border-color: var(--d-dim);
+  background: rgba(88, 166, 255, 0.12);
+  border-color: #58a6ff;
+  transform: translateY(-1px);
 }
-.preset[aria-selected="true"] {
-  background: rgba(31, 111, 235, 0.18);
-  border-color: var(--d-blue);
-  color: #cae3ff;
+.preset[aria-pressed="true"] {
+  background: #0d419d;
+  border-color: #58a6ff;
+  color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(31, 111, 235, 0.18);
 }
 
 .cw-endpoint {
@@ -1248,8 +1284,8 @@ h1 {
 }
 
 .request-guide {
-  background: rgba(31, 111, 235, 0.1);
-  border: 1px solid rgba(88, 166, 255, 0.28);
+  background: rgba(31, 111, 235, 0.14);
+  border: 1px solid rgba(88, 166, 255, 0.48);
   border-radius: 8px;
   margin: 0 0 10px;
   padding: 10px 12px;
@@ -1267,7 +1303,7 @@ h1 {
   font-size: 12px;
 }
 .request-guide p {
-  color: var(--d-muted);
+  color: #c9d1d9;
   font-size: 11.5px;
   line-height: 1.55;
   margin: 0;
@@ -1281,9 +1317,9 @@ h1 {
   width: 7px;
 }
 .editor-state {
-  border: 1px solid var(--d-line2);
+  border: 1px solid rgba(139, 148, 158, 0.5);
   border-radius: 999px;
-  color: var(--d-muted);
+  color: #c9d1d9;
   font-size: 10px;
   font-weight: 700;
   padding: 2px 7px;
@@ -1527,6 +1563,9 @@ h1 {
 @media (max-width: 860px) {
   .cw-body { grid-template-columns: minmax(0, 1fr); }
   .cw-req { border-right: none; border-bottom: 1px solid var(--d-line); }
+  .scenario-picker {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 @media (max-width: 720px) {
   .flow-steps {
@@ -1534,7 +1573,15 @@ h1 {
   }
   .cw-bar { flex-wrap: wrap; }
   .cw-head { flex-wrap: wrap; }
-  .cw-presets { margin-left: 0; justify-content: flex-start; }
+  .scenario-picker {
+    padding: 11px;
+  }
+  .cw-presets {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .preset {
+    min-height: 38px;
+  }
   .run-btn { min-height: 46px; flex: 1; }
   .run-btn[data-mode="approval"]:disabled,
   .run-btn[data-mode="execute"]:disabled,
@@ -1554,7 +1601,7 @@ h1 {
     align-items: flex-start;
     flex-direction: column;
   }
-  .preset, .copy-btn { min-height: 33px; }
+  .copy-btn { min-height: 33px; }
 }
 
 /* ===== polish: copy feedback, dark snippets, spinner, real-feel ===== */
@@ -1586,9 +1633,12 @@ h1 {
 /* dark MCP config card, matches the console */
 .mcp-config {
   background: #0d1117;
-  border-color: #010409;
+  border-color: #21262d;
 }
-.mcp-config > summary { color: #8b949e; }
+.mcp-config > summary {
+  color: #e6edf3;
+  font-size: 12px;
+}
 .mcp-config > summary:hover { color: #e6edf3; }
 .mcp-config .json {
   background: #010409;
