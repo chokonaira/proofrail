@@ -3,6 +3,7 @@
   "references": [
     { "path": "./packages/core" },
     { "path": "./packages/local-provider" },
+    { "path": "./packages/local-approval" },
     { "path": "./packages/mcp-gateway" },
     { "path": "./packages/mcp" },
     { "path": "./packages/webhook-provider" }

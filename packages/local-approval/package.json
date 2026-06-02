@@ -1,0 +1,36 @@
+{
+  "name": "@permitrail/local-approval",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Local human approval server and page for PermitRail agent tool calls. For demos, single-user dev, and internal tools.",
+  "license": "Apache-2.0",
+  "author": "Henry Okonkwo",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chokonaira/permitrail.git",
+    "directory": "packages/local-approval"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "development": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "sideEffects": false,
+  "files": ["dist", "README.md", "LICENSE"],
+  "dependencies": {
+    "@permitrail/core": "0.1.0",
+    "@permitrail/provider-local": "0.1.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
