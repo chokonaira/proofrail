@@ -18,7 +18,7 @@ signed receipt lands in your audit log.
 ```mermaid
 flowchart LR
     A(["AI agent"]) --> P{"authorize<br/>policy"}
-    P -->|"needs approval"| V["approve<br/>signed proof"]
+    P -->|"needs approval"| V["a person or service approves<br/>signed proof"]
     P -->|"deny"| X["blocked<br/>signed denial"]
     V --> E["execute<br/>tool runs once"]
     E --> S[("seal<br/>signed receipt")]
@@ -230,10 +230,13 @@ agent's approval.
 
 ## Approval providers
 
-A provider answers an approval request and signs a proof. Two are included: the
-local provider (in-process, for demos and internal tools) and the webhook
-provider (routes each approval to any HTTP endpoint and signs on approval). The
-same policy and proof format also work for:
+A provider answers an approval request and signs a proof. Three approval surfaces
+are included: the local provider (`@permitrail/provider-local`, in-process, for
+tests and demos), the local approval server and page (`@permitrail/local-approval`,
+a person approves from a localhost page, for dev and internal tools), and the
+webhook provider (`@permitrail/provider-webhook`, routes each approval to your own
+HTTP endpoint and signs on approval, the production path). The same policy and
+proof format also work for:
 
 - passkeys and WebAuthn
 - email one-time codes or magic links
