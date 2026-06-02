@@ -66,26 +66,26 @@ export async function startApprovalServer(options: ApprovalServerOptions): Promi
         return send(res, 200, JSON.stringify(pending));
       }
 
-      const challengeMatch = path.match(/^\/api\/challenge\/([^/]+)$/);
-      if (req.method === 'GET' && challengeMatch) {
-        const challenge = await provider.getChallenge(challengeMatch[1]);
+      const challengeId = path.match(/^\/api\/challenge\/([^/]+)$/)?.[1];
+      if (req.method === 'GET' && challengeId) {
+        const challenge = await provider.getChallenge(challengeId);
         if (!challenge) return send(res, 404, JSON.stringify({ error: 'not found' }));
         return send(res, 200, JSON.stringify({ status: challenge.status }));
       }
 
-      const approveMatch = path.match(/^\/api\/approve\/([^/]+)$/);
-      if (req.method === 'POST' && approveMatch) {
+      const approveId = path.match(/^\/api\/approve\/([^/]+)$/)?.[1];
+      if (req.method === 'POST' && approveId) {
         const body = await readJson(req);
-        await provider.approve(approveMatch[1], {
+        await provider.approve(approveId, {
           approvedBy: typeof body.approvedBy === 'string' ? body.approvedBy : 'local-user',
         });
         return send(res, 200, JSON.stringify({ ok: true }));
       }
 
-      const denyMatch = path.match(/^\/api\/deny\/([^/]+)$/);
-      if (req.method === 'POST' && denyMatch) {
+      const denyId = path.match(/^\/api\/deny\/([^/]+)$/)?.[1];
+      if (req.method === 'POST' && denyId) {
         const body = await readJson(req);
-        await provider.deny(denyMatch[1], {
+        await provider.deny(denyId, {
           reason: typeof body.reason === 'string' ? body.reason : 'Denied from local approval page',
         });
         return send(res, 200, JSON.stringify({ ok: true }));
