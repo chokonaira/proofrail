@@ -46,3 +46,16 @@ Before opening a PR, check:
 - Can a proof be replayed for a different action or audience?
 - Are action inputs hashed into receipts where useful?
 - Are errors safe and non-leaky?
+
+## Releasing
+
+Releases use [Changesets](https://github.com/changesets/changesets). When a pull
+request changes a published package, add a changeset describing the bump:
+
+```bash
+npx changeset
+```
+
+On merge to `main`, a "Version Packages" pull request opens with the version bumps
+and changelog entries. Merging that pull request publishes only the changed
+packages to npm with provenance. Unchanged packages are left as they are.
